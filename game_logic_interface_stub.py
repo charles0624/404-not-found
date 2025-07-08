@@ -1,4 +1,3 @@
-from editor_logic_stub import EditorLogicStub
 from data_access_stub import QuestionDataAccessStub
 from flask import Flask, request, jsonify
 from game_session import GameSession
@@ -27,10 +26,6 @@ def setup_game():
     turn_manager = TurnManager(users)
     rule_engine = RuleEngine()
     player_tracker = PlayerTracker(users)
-
-    # subsystem communication
-    editor = EditorLogicStub()
-    editor.respond_to_game_logic()
 
     db = QuestionDataAccessStub()
     question = db.get_mock_question()
