@@ -1,4 +1,4 @@
-
+from data_access_stub import QuestionDataAccessStub
 from flask import Flask, request, jsonify
 from game_session import GameSession
 from dice_service import DiceService
@@ -26,6 +26,11 @@ def setup_game():
     turn_manager = TurnManager(users)
     rule_engine = RuleEngine()
     player_tracker = PlayerTracker(users)
+
+    db = QuestionDataAccessStub()
+    question = db.get_mock_question()
+    print(f"[Stub] Game Logic received question: {question}")
+
     return jsonify({"status": "game session initialized", "players": users})
 
 @app.route('/api/roll-dice', methods=['POST'])
