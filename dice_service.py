@@ -4,4 +4,6 @@ import random
 class DiceService:
     @staticmethod
     def roll():
-        return random.randint(1, 6)
+        value = random.randint(1, 6)
+        print(f"[Stub] Dice rolled: {value}")
+        return value
