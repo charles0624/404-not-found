@@ -2,29 +2,40 @@
 from flask import Flask, request, jsonify
 from game_session import GameSession
 from dice_service import DiceService
+from game_session_manager import GameSessionManager
+from turn_manager import TurnManager
+from rule_engine import RuleEngine
+from player_tracker import PlayerTracker
 
 app = Flask(__name__)
 
-# game object
 game_session = None
+turn_manager = None
+rule_engine = None
+player_tracker = None
+manager = None
 
 @app.route('/api/settings', methods=['POST'])
 def setup_game():
-    global game_session
+    global game_session, manager, turn_manager, rule_engine, player_tracker
     data = request.get_json()
     users = data.get("users", [])
     topics = data.get("topics", [])
     game_session = GameSession(users, topics)
-    print(f"[DEBUG] Game session created with users: {users}, topics: {topics}")
+    manager = GameSessionManager(users, topics)
+    turn_manager = TurnManager(users)
+    rule_engine = RuleEngine()
+    player_tracker = PlayerTracker(users)
     return jsonify({"status": "game session initialized", "players": users})
 
 @app.route('/api/roll-dice', methods=['POST'])
 def roll_dice():
+    global turn_manager
     data = request.get_json()
     player = data.get("player", "Unknown")
     roll = DiceService.roll()
-    print(f"[DEBUG] Player '{player}' rolled a {roll}")
-    valid_moves = [f"Space {i}" for i in range(1, roll + 1)]  # location
+    print(f"[Stub] Player '{player}' rolled a {roll}")
+    valid_moves = [f"Space {i}" for i in range(1, roll + 1)]
     return jsonify({"roll": roll, "validMoves": valid_moves})
 
 if __name__ == '__main__':
