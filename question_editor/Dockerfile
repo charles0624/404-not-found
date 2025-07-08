@@ -1,11 +1,11 @@
-FROM python:3.11
+FROM python:3.11-slim
 
 WORKDIR /app
 
-ADD question_editor_interface_stub.py .
-ADD Card.py .
-ADD Deck.py .
+ENV APP="question_editor.py"
+ADD ${APP} .
 
-RUN pip install pydantic
+RUN pip install --upgrade pip
+RUN pip install requests
 
-CMD [ "python", "question_editor_interface_stub.py" ]
+CMD python ${APP}
