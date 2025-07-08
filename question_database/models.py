@@ -4,8 +4,8 @@ db = SQLAlchemy()
 
 # Table to hold question to deck relationships (many-to-many)
 question_decktag = db.Table('question_decktag',
-                            db.Column('question_id', db.Integer, db.ForeignKey('question.id')),
-                            db.Column('deck_id', db.Integer, db.ForeignKey('deck.id'))
+                            db.Column('question_id', db.Integer, db.ForeignKey('questions.id')),
+                            db.Column('decktag_id', db.Integer, db.ForeignKey('deck_tags.id'))
                             )
 
 class Category(db.Model):
