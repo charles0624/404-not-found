@@ -147,7 +147,6 @@ def prompt_delete_card() -> None:
 
         try:
             response = requests.delete(f"{DB_URL}/questions/{selection}")
-                                    #headers=HEADERS)
             response.raise_for_status()
         except requests.exceptions as err:
             print("ERROR: {err}")
