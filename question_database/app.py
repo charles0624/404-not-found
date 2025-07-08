@@ -19,24 +19,31 @@ def index():
 def create_question():
     data = request.json
 
+    # 1. Find or create category
     category = Category.query.filter_by(name=data['category']).first()
     if not category:
         category = Category(name=data['category'])
         db.session.add(category)
+        db.session.flush()  # ensure category.id is available for FK
 
+    # 2. Create the Question object, assign by FK directly
     question = Question(
         question_text=data['question'],
         answer_text=data['answer'],
-        category=category
+        category_id=category.id  # avoids relationship warnings
     )
+    db.session.add(question)
+    db.session.flush()  # get question.id if needed later
 
+    # 3. Handle deck tags (many-to-many)
     for tag_name in data.get('deck_tags', []):
         tag = DeckTag.query.filter_by(name=tag_name).first()
         if not tag:
             tag = DeckTag(name=tag_name)
+            db.session.add(tag)
+            db.session.flush()
         question.deck_tags.append(tag)
 
-    db.session.add(question)
     db.session.commit()
 
     return jsonify({"message": "Question added", "id": question.id})
