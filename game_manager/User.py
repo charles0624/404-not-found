@@ -28,9 +28,6 @@ class User():
     def get_username(self) -> str:
         return self.username
 
-    def set_username(self, new_username) -> None:
-        self.username = new_username
-
     def get_color(self) -> str:
         return self.color
 
@@ -43,5 +40,6 @@ class User():
     def get_coords(self) -> list:
         return self.coords
 
-    def set_coords(self, new_coords) -> None:
-        self.coords = new_coords
+    def set_coords(self, direction, quantity) -> None:
+        self.coords[0] = direction
+        self.coords[1] = quantity

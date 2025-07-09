@@ -1,4 +1,13 @@
+import json
 import pydantic
+import random
+import requests
+
+from typing import Optional
+
+# needed for web api
+DB_URL = "http://127.0.0.1:5000"
+HEADERS = {"Content-Type": "application/json"}
 
 # my guess as to what's in the database
 class Board_Args(pydantic.BaseModel):
@@ -7,48 +16,72 @@ class Board_Args(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(extra='forbid', strict=True)
 
     # generic board name
-    name: list
+    name: Optional[str] = None
     # could this be a save state type of deal?  dream-category
     # name + '_' + ordinal position: "newgame_25"
-    identifier: str = ""
+    identifier: str
+
+    db_url: str
+
 
 class Board():
-    def __init__(self):
-        # need to create 'random_name_generator()'
-        #self.name = random_name_generator()
-        self.name = "boardnamevariable"
-        # add function to see how many games in the database are currently being played
-        # number = str(database_read(db, category))
+    def __init__(self, number, db_url, name=None):
+        if not name:
+            self.name = "boardnamevariable"
+        else:
+            self.name = name
+
         self.identifier = f"{self.name}_{number}"
+
+        # any letter to any letter, where neither letter is 'X', has an edge weight of 6
+        # any letter to 'X', has an edge weight of 5
+        self.board = {
+                "A": ["F", "B", "X"],
+                "B": ["A", "C", "X"],
+                "C": ["B", "D", "X"],
+                "D": ["C", "E", "X"],
+                "E": ["D", "F", "X"],
+                "F": ["E", "A", "X"],
+                "X": ["A", "B", "C", "D", "E", "F"]
+                }
+
+        self.used_question_ids = []
 
     def __repr__(self):
         return f"{self.name} : {self.identifier}"
 
-    def get_category(self) -> str:
-        return self.category
+    # TODO: associate board spaces with colors -> trivia categories
 
-    def set_category(self, new_category) -> None:
-        self.category = new_category
+    def ask_question(self, boardspace) -> None:
+        # TODO: get quantity of cards in deck
+        selection = random.randint(1,10)
+        if not len(self.used_question_ids) == 0:
+            while True:
+                if not selection in self.used_question_ids:
+                    break
+                selection = random.randint(1,10)
 
-    def get_question(self) -> str:
-        return self.question
+ 
+        data = {"question_id": selection}
+        try:
+            response = requests.get(f"{DB_URL}/questions/{selection}", data=json.dumps(data),
+                                     headers=HEADERS)
+            response.raise_for_status()
+        except requests.exceptions as err:
+            print("ERROR: {err}")
+            return 0
 
-    def set_question(self, new_question) -> None:
-        self.question = new_question
+        self.used_question_ids.append(response.json()['id'])
+        print(response.json()["question"])
 
-    def get_answer(self) -> str:
-        return self.answer
+        input("press the 'enter' to reveal the answer...")
 
-    def set_answer(self, new_answer) -> None:
-        self.answer = new_answer
+        print(response.json()["answer"])
 
-    def get_deck_memberships(self) -> list:
-        return self.deck_names
-
-    def add_deck_membership(self, new_deck) -> None:
-        if new_deck not in self.deck_names:
-            self.deck_names.append(new_deck)
-
-    def remove_deck_membership(self, old_deck) -> None:
-        if old_deck in self.deck_names:
-            self.deck_names.remove(old_deck)
+        correct = input("did the player answer correctly? [y/N] ")
+        if correct in ("y", "yes", "Y", "YES"):
+            print("woot woot!")
+            return True
+        else:
+            print("womp womp!")
+            return False
