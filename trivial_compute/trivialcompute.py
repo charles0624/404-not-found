@@ -6,6 +6,7 @@ from databased.db import db
 from databased.models.Question import Question
 from databased.models.DeckTag import DeckTag
 from databased.models.Category import Category
+from databased.models.Question_Tag_Relationship import Question_Decktag
 
 # our html pages
 #from api.routes import api_blueprint
@@ -18,7 +19,7 @@ print(f"APP_NAME: {APP_NAME}")
 app = Flask(APP_NAME)
 
 # add access to the gui folder
-app.register_blueprint(gui_blueprint, url_prefix="/gui")
+app.register_blueprint(gui_blueprint)
 
 # add access to the api folder
 #app.register_blueprint(api_blueprint, url_prefix="/api")
@@ -36,12 +37,5 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(app)
 with app.app_context():
     db.create_all()
-
-# Table to hold question to deck relationships (many-to-many)
-question_decktag = db.Table(
-    "question_decktag",
-    db.Column("question_id", db.Integer, db.ForeignKey("questions.id")),
-    db.Column("decktag_id", db.Integer, db.ForeignKey("deck_tags.id")),
-)
 
 app.run(debug=True)

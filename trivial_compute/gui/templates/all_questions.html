@@ -6,8 +6,8 @@
     <title>THE QUESTIONS</title>
 </head>
 <body>
-{% for q in questions %}
-{{q.question}}<br>
-{% endfor %}
+{% if questions %}
+{{ questions }}<br>
+{% endif %}
 </body>
 </html>

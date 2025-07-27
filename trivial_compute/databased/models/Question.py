@@ -1,4 +1,5 @@
 from sqlalchemy import Column, ForeignKey, Integer, Text
+from sqlalchemy.orm import relationship
 from .base import Base
 
 class Question(Base):
@@ -8,11 +9,11 @@ class Question(Base):
     answer_text = Column(Text, nullable=False)
     category_id = Column(Integer, ForeignKey("categories.id"), nullable=False)
 
-    #deck_tags = db.relationship(
-    #    "DeckTag",
-    #    secondary=question_decktag,
-    #    backref=db.backref("question", lazy="dynamic"),
-    #)
+    deck_tags = relationship(
+        "DeckTag",
+        secondary="question_decktag",
+        backref="question", lazy="dynamic",
+    )
 
     def __repr__(self):
         return f"Question: {self.question_text} - {self.answer_text}"

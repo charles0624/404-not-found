@@ -8,16 +8,22 @@
 <body>
     <h1> Enter question data: </h1>
 
-    <form action="create_question", method="POST">
+    <form action="submit_question", method="POST">
         <label for="question">question:</label><br>
         <input type="text" id="question" name="question"><br>
         <label for="answer">answer:</label><br>
         <input type="text" id="answer" name="answer"><br><br>
-        <label for="category">category:</label><br>
-        <input type="text" id="category" name="category"><br><br>
-        <label for="deck_tag">deck tags:</label><br>
-        <input type="text" id="deck_tags" name="deck_tags"><br><br>
+        #<label for="category">category:</label><br>
+        #<input type="text" id="category" name="category"><br><br>
+        #<label for="deck_tags">deck tags:</label><br>
+        #<input type="text" id="deck_tags" name="deck_tags"><br><br>
         <input type="submit" value="Submit">
     </form>
+
+    {% if response_message %}
+        <h2>Status:</h2>
+        <p>{{ response_message }}</p>
+    {% endif %}
+    <h2> Return home </h2>
 </body>
 </html>

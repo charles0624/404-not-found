@@ -10,7 +10,6 @@ gui_blueprint = Blueprint("gui_blueprint", __name__, template_folder="templates"
 
 @gui_blueprint.route("/")
 def index():
-    # return "Question DB is ready!"
     return render_template("index.html")
 
 
@@ -18,9 +17,48 @@ def index():
 def create_question():
     return render_template("create_question.html")
 
+@gui_blueprint.route("/submit_question", methods=["POST"])
+def submit_question():
+    question = request.form['question']
+    answer = request.form['answer']
+    category = request.form['category']
+    deck_tags = request.form['deck_tags']
+
+    # 1. Find or create category
+    table_category = db.session.query(Category).filter(Category.name == category).first()
+    if not table_category:
+        table_category = Category(name=category)
+        db.session.add(table_category)
+        db.session.flush()  # ensure category.id is available for FK
+
+    # 2. Create the Question object, assign by FK directly
+    table_question = Question(
+        question_text=question,
+        answer_text=answer,
+        category_id=table_category.id  # avoids relationship warnings
+    )
+    db.session.add(table_question)
+    db.session.flush()  # get question.id if needed later
+
+    # 3. Handle deck tags (many-to-many)
+    #for tag_name in data.get('deck_tags', []):
+    for tag_name in deck_tags:
+        tag = db.session.query(DeckTag).filter(DeckTag.name == tag_name).first()
+        if not tag:
+            tag = DeckTag(name=tag_name)
+            db.session.add(tag)
+            db.session.flush()
+        table_question.deck_tags.append(tag)
+
+    db.session.commit()
+
+    response_msg = "question commited!"
+    return render_template("create_question.html", response_message=response_msg)
+
+
 @gui_blueprint.route("/questions", methods=["GET"])
 def list_questions():
-    questions = Question.query.all()
+    questions = db.session.query(Question).all()
     # return jsonify([
     #    {
     #        "id": q.id,
