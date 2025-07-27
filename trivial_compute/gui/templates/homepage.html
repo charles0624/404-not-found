@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flask Fetch Example</title>
+</head>
+<body>
+    <h1>Data from Flask:</h1>
+    <p id="message"></p>
+    <button onclick="fetchData()">Get Data</button>
+
+    <script>
+        function fetchData() {
+            fetch('/api/data')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('message').innerText = data.message;
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        // Example of sending data
+        function sendData() {
+            const dataToSend = { name: 'John Doe', age: 30 };
+            fetch('/api/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dataToSend)
+            })
+            .then(response => response.json())
+            .then(data => console.log('Data sent successfully:', data))
+            .catch(error => console.error('Error sending data:', error));
+        }
+    </script>
+</body>
+</html>
