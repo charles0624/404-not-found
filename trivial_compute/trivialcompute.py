@@ -29,7 +29,7 @@ with app.app_context():
 
 
 HOME_PAGE = "index.html"
-USERS_MENU = "users.html"
+USERS_MENU = "users_menu.html"
 
 QUESTIONS_MENU = "questions_menu.html"
 CREATE_QUESTION = "create_question.html"
@@ -46,12 +46,12 @@ def index():
     return render_template(HOME_PAGE)
 
 
-@app.route("exit", methods=["GET"])
+@app.route("/exit", methods=["GET"])
 def exit():
     sys.exit()  # can't imagine this is recommended
 
-
-@app.route("play_game", methods=["GET"])
+# enter player data
+@app.route("/play_game", methods=["GET"])
 def play_game():
     return render_template(USERS_MENU)
 
