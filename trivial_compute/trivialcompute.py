@@ -29,16 +29,48 @@ with app.app_context():
 
 
 HOME_PAGE = "index.html"
+USERS_MENU = "users.html"
+
+QUESTIONS_MENU = "questions_menu.html"
 CREATE_QUESTION = "create_question.html"
 READ_QUESTIONS = "questions.html"
 UPDATE_QUESTION = "update_question.html"
 DELETE_QUESTION = "delete_question.html"
 
 
+###
+#  Gameplay Routes
+###
 @app.route("/", methods=["GET"])
 def index():
     return render_template(HOME_PAGE)
 
+@app.route("exit", methods=["GET"])
+def exit():
+    sys.exit() # can't imagine this is recommended
+
+@app.route("play_game", methods=["GET"])
+def play_game():
+    return render_template(USERS_MENU)
+
+# TODO
+#@app.route("settings", methods=["GET"])
+#def settings():
+#    pass
+#
+#@app.route("start_game", methods=["GET"])
+#def start_game():
+#    pass
+#
+
+###
+#  Question Database Routes
+###
+
+# TODO
+#@app.route("question_menu", methods=["GET"])
+#def question_menu():
+#    return render_template(QUESTIONS_MENU)
 
 # CREATE a question
 @app.route("/create_question", methods=["GET", "POST"])
