@@ -2,10 +2,12 @@
 from flask import Flask, redirect, render_template, request, jsonify, url_for
 from pathlib import Path
 from flask_sqlalchemy import SQLAlchemy
+import random
 import sys
 
 
 from models import db, Category, DeckTag, Question
+from game_object import COLORS, get_player
 
 # name the app as the parent dir
 APP_NAME = Path(__file__).stem
@@ -30,6 +32,7 @@ with app.app_context():
 
 HOME_PAGE = "index.html"
 USERS_MENU = "users_menu.html"
+GAME_SESSION = "game_session.html"
 
 QUESTIONS_MENU = "questions_menu.html"
 CREATE_QUESTION = "create_question.html"
@@ -55,6 +58,27 @@ def exit():
 def play_game():
     return render_template(USERS_MENU)
 
+def random_color_index(modulo_number):
+    return random.randint(0,100) % modulo_number # ensure it is random AND between length of list, inclusive
+
+# called from USERS_MENU
+@app.route("/game_session", methods=["POST"])
+def display_board():
+    player_list = [
+        request.form.get("player1", None),
+        request.form.get("player2", None),
+        request.form.get("player3", None),
+        request.form.get("player4", None)
+    ]
+    player_colors = COLORS
+    list_len = len(player_colors)
+    data: dict = {}
+    for player in player_list:
+        player_color = player_colors.pop(random_color_index(list_len))
+        data[player] = player_color
+        list_len -= 1
+
+    return render_template(GAME_SESSION, players=data)
 
 # TODO
 # @app.route("settings", methods=["GET"])
