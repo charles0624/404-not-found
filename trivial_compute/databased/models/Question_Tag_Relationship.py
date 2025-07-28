@@ -6,6 +6,7 @@ from .base import Base
 #    db.Column("question_id", db.Integer, db.ForeignKey("questions.id")),
 #    db.Column("decktag_id", db.Integer, db.ForeignKey("deck_tags.id")),
 
+
 class Question_Decktag(Base):
     __tablename__ = "question_decktag"
     id = Column(Integer, primary_key=True)

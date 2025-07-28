@@ -2,6 +2,7 @@ from sqlalchemy import Column, ForeignKey, Integer, Text
 from sqlalchemy.orm import relationship
 from .base import Base
 
+
 class Question(Base):
     __tablename__ = "questions"
     id = Column(Integer, primary_key=True)
@@ -12,7 +13,8 @@ class Question(Base):
     deck_tags = relationship(
         "DeckTag",
         secondary="question_decktag",
-        backref="question", lazy="dynamic",
+        backref="question",
+        lazy="dynamic",
     )
 
     def __repr__(self):

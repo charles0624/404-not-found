@@ -8,6 +8,7 @@ from databased.db import db
 
 gui_blueprint = Blueprint("gui_blueprint", __name__, template_folder="templates")
 
+
 @gui_blueprint.route("/")
 def index():
     return render_template("index.html")
@@ -17,15 +18,19 @@ def index():
 def create_question():
     return render_template("create_question.html")
 
+
+# this function is performed when a player clicks "submit" on 'create_question.html'
 @gui_blueprint.route("/submit_question", methods=["POST"])
 def submit_question():
-    question = request.form['question']
-    answer = request.form['answer']
-    category = request.form['category']
-    deck_tags = request.form['deck_tags']
+    question = request.form["question"]
+    answer = request.form["answer"]
+    category = request.form["category"]
+    deck_tags = request.form["deck_tags"]
 
     # 1. Find or create category
-    table_category = db.session.query(Category).filter(Category.name == category).first()
+    table_category = (
+        db.session.query(Category).filter(Category.name == category).first()
+    )
     if not table_category:
         table_category = Category(name=category)
         db.session.add(table_category)
@@ -35,13 +40,13 @@ def submit_question():
     table_question = Question(
         question_text=question,
         answer_text=answer,
-        category_id=table_category.id  # avoids relationship warnings
+        category_id=table_category.id,  # avoids relationship warnings
     )
     db.session.add(table_question)
     db.session.flush()  # get question.id if needed later
 
     # 3. Handle deck tags (many-to-many)
-    #for tag_name in data.get('deck_tags', []):
+    # for tag_name in data.get('deck_tags', []):
     for tag_name in deck_tags:
         tag = db.session.query(DeckTag).filter(DeckTag.name == tag_name).first()
         if not tag:
@@ -59,20 +64,10 @@ def submit_question():
 @gui_blueprint.route("/questions", methods=["GET"])
 def list_questions():
     questions = db.session.query(Question).all()
-    # return jsonify([
-    #    {
-    #        "id": q.id,
-    #        "question": q.question_text,
-    #        "answer": q.answer_text,
-    #        "category": q.category.name,
-    #        "deck_tags": [tag.name for tag in q.deck_tags]
-    #    }
-    #    for q in questions
-    # ])
     return render_template("all_questions.html", questions=questions)
 
 
-@gui_blueprint.route("/questions/<int:question_id>", methods=["GET"])
+@gui_blueprint.route("/update_question/<int:question_id>", methods=["GET"])
 def update_question(question_id):
     question = Question.query.get_or_404(question_id)
     data = request.json

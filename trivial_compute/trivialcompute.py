@@ -9,7 +9,7 @@ from databased.models.Category import Category
 from databased.models.Question_Tag_Relationship import Question_Decktag
 
 # our html pages
-#from api.routes import api_blueprint
+# from api.routes import api_blueprint
 from gui.routes import gui_blueprint
 
 
@@ -22,7 +22,7 @@ app = Flask(APP_NAME)
 app.register_blueprint(gui_blueprint)
 
 # add access to the api folder
-#app.register_blueprint(api_blueprint, url_prefix="/api")
+# app.register_blueprint(api_blueprint, url_prefix="/api")
 
 # name the database as parentdir.db
 APP_DB = f"{Path.cwd()}/databased/{APP_NAME}.db"
