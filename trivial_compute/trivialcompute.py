@@ -45,21 +45,24 @@ DELETE_QUESTION = "delete_question.html"
 def index():
     return render_template(HOME_PAGE)
 
+
 @app.route("exit", methods=["GET"])
 def exit():
-    sys.exit() # can't imagine this is recommended
+    sys.exit()  # can't imagine this is recommended
+
 
 @app.route("play_game", methods=["GET"])
 def play_game():
     return render_template(USERS_MENU)
 
+
 # TODO
-#@app.route("settings", methods=["GET"])
-#def settings():
+# @app.route("settings", methods=["GET"])
+# def settings():
 #    pass
 #
-#@app.route("start_game", methods=["GET"])
-#def start_game():
+# @app.route("start_game", methods=["GET"])
+# def start_game():
 #    pass
 #
 
@@ -68,9 +71,10 @@ def play_game():
 ###
 
 # TODO
-#@app.route("question_menu", methods=["GET"])
-#def question_menu():
+# @app.route("question_menu", methods=["GET"])
+# def question_menu():
 #    return render_template(QUESTIONS_MENU)
+
 
 # CREATE a question
 @app.route("/create_question", methods=["GET", "POST"])
