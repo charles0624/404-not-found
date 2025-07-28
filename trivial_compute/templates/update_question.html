@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, intital-scale=1.0">
+    <title>Update A Question</title>
+</head>
+<body>
+    <h1> The "question id" dictates which question will have it's fields updated </h1>
+
+    <form action="commit_update", method="POST">
+        <label for="question_id">id:</label><br>
+        <input type="text" id="question_id" name="question_id", value={{ question_id if question_id
+        else ""}}><br>
+
+        <label for="question">question:</label><br>
+        <input type="text" id="question" name="question", value={{ data.question_text if data else "" }}><br>
+        <label for="answer">answer:</label><br>
+        <input type="text" id="answer" name="answer", value={{ data.answer_text if data else "" }}><br><br>
+        <label for="category">category:</label><br>
+        <input type="text" id="category" name="category", value={{ data.category.name if data else "" }}><br><br>
+        <label for="deck_tags">deck tags:</label><br>
+        <input type="text" id="deck_tags" name="deck_tags", value={{ data.deck_tags if data else "" }}><br><br>
+        <input type="submit" value="Submit">
+    </form>
+
+    {% if response_message %}
+        <h2>Status:</h2>
+        <p>{{ response_message }}</p>
+    {% endif %}
+    <h2> Return home </h2>
+</body>
+</html>

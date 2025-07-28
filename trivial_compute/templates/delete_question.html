@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, intital-scale=1.0">
+    <title>Delete A Question</title>
+</head>
+<body>
+    <h1> The "question id" dictates which question will be deleted </h1>
+
+    <form action="commit_delete", method="POST">
+        <label for="question_id">id:</label><br>
+        <input type="text" id="question_id" name="question_id", value={{ question_id if question_id
+        else ""}}><br>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    {% if response_message %}
+        <h2>Status:</h2>
+        <p>{{ response_message }}</p>
+    {% endif %}
+    <h2> Return home </h2>
+</body>
+</html>
