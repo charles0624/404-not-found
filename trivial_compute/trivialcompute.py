@@ -3,6 +3,7 @@ from flask import Flask, redirect, render_template, request, jsonify, url_for
 from pathlib import Path
 from flask_sqlalchemy import SQLAlchemy
 import random
+from sqlalchemy import desc
 import sys
 
 
@@ -64,6 +65,7 @@ def random_color_index(modulo_number):
 # called from USERS_MENU
 @app.route("/game_session", methods=["POST"])
 def display_board():
+    # get player names
     player_list = [
         request.form.get("player1", None),
         request.form.get("player2", None),
@@ -72,13 +74,16 @@ def display_board():
     ]
     player_colors = COLORS
     list_len = len(player_colors)
-    data: dict = {}
+    player_objs = list()
+    # create player objects and assign each one a color
     for player in player_list:
         player_color = player_colors.pop(random_color_index(list_len))
-        data[player] = player_color
+        player_objs.append(get_player(player, player_color))
         list_len -= 1
 
-    return render_template(GAME_SESSION, players=data)
+    # generate the game board
+
+    return render_template(GAME_SESSION, players=player_objs)
 
 # TODO
 # @app.route("settings", methods=["GET"])
@@ -115,7 +120,6 @@ def create_question():
 
     # 1. Find or create category
     table_category = Category.query.filter_by(name=category).first()
-    # db.session.query(Category).filter(Category.name == category).first()
     if not table_category:
         table_category = Category(name=category)
         db.session.add(table_category)
@@ -180,10 +184,6 @@ def list_questions(question_id=None):
     return render_template(READ_QUESTIONS, questions=data)
 
 
-def list_question(question_id):
-    return render_template(READ_QUESTIONS, questions=data)
-
-
 # UPDATE a question
 @app.route("/update_question", methods=["GET"])
 @app.route("/commit_update", methods=["POST"])
@@ -206,13 +206,16 @@ def update_question():
         if category:
             table_category = Category.query.filter_by(name=category).first()
             if not table_category:
-                category = Category(name=category)
+                most_recent_category = (Category.query.order_by(desc(Category.id)).first())
+                new_category_id = most_recent_category.id + 1
+                category = Category(id=new_category_id, name=category)
                 db.session.add(category)
-            question_obj.category.name = category
+            question_obj.category.name = category.name
         if deck_tags:
-            question_obj.deck_tags.clear()
+            for d_t in question_obj.deck_tags:
+                question_obj.deck_tags.remove(d_t)
             for tag_name in deck_tags:
-                tag = DeckTag.query.filter(name=tag_name).first()
+                tag = DeckTag.query.filter_by(name=tag_name).first()
                 if not tag:
                     tag = DeckTag(name=tag_name)
                 question_obj.deck_tags.append(tag)
@@ -233,8 +236,9 @@ def delete_question():
     if request.method == "POST":
         question_id = request.form.get("question_id", None)
         question = Question.query.get_or_404(question_id)
-        for deck_tag in question.deck_tags:
-            question.deck_tags.remove(deck_tag)
+        if question.deck_tags:
+            for deck_tag in question.deck_tags:
+                question.deck_tags.remove(deck_tag)
         db.session.delete(question)
         db.session.commit()
 
