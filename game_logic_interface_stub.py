@@ -88,7 +88,7 @@ def check_answer():
 
 @app.route("/", methods=["GET"])
 def index():
-    return "🧠 Game Logic API is live!"
+    return "Game Logic API is live!"
 
 if __name__ == '__main__':
     app.run(debug=True)
