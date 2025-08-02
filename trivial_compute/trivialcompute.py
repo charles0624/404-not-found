@@ -137,7 +137,7 @@ def create_question():
     # 3. Handle deck tags (many-to-many)
     # for tag_name in data.get('deck_tags', []):
     if deck_tags:
-        all_tags = deck_tags.split()
+        all_tags = deck_tags.split(':')
         for tag_name in all_tags:
             tag = DeckTag.query.filter_by(name=tag_name).first()
             if not tag:
@@ -206,18 +206,18 @@ def update_question():
         if category:
             table_category = Category.query.filter_by(name=category).first()
             if not table_category:
-                most_recent_category = (Category.query.order_by(desc(Category.id)).first())
-                new_category_id = most_recent_category.id + 1
-                category = Category(id=new_category_id, name=category)
-                db.session.add(category)
-            question_obj.category.name = category.name
+                table_category = Category(name=category)
+                db.session.add(table_category)
+                db.session.flush()
+            question_obj.category = table_category
         if deck_tags:
-            for d_t in question_obj.deck_tags:
-                question_obj.deck_tags.remove(d_t)
-            for tag_name in deck_tags:
+            question_obj.deck_tags = []
+            for tag_name in deck_tags.split(':'):
                 tag = DeckTag.query.filter_by(name=tag_name).first()
                 if not tag:
                     tag = DeckTag(name=tag_name)
+                    db.session.add(tag)
+                    db.session.flush()
                 question_obj.deck_tags.append(tag)
         db.session.commit()
 
