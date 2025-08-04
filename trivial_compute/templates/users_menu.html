@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, intital-scale=1.0">
+    <title>Players</title>
+</head>
+<body>
+    <h1> Input player names </h1>
+    <h2> (empty fields will not be added) </h2>
+
+    <form action="game_session", method="POST">
+        <label for="player1">player1:</label><br>
+        <input type="text" id="player1" name="player1"><br>
+        <br>
+        <label for="player2">player2:</label><br>
+        <input type="text" id="player2" name="player2"><br>
+        <br>
+        <label for="player3">player3:</label><br>
+        <input type="text" id="player3" name="player3"><br>
+        <br>
+        <label for="player4">player4:</label><br>
+        <input type="text" id="player4" name="player4"><br>
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+
+    {% if response_message %}
+        <h2>Status:</h2>
+        <p>{{ response_message }}</p>
+    {% endif %}
+    <h2> Return home </h2>
+    <form action="/", method="GET">
+        <input type="submit" value="home">
+    </form>
+</body>
+</html>
