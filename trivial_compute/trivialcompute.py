@@ -54,6 +54,11 @@ def index():
 def exit():
     sys.exit()  # can't imagine this is recommended
 
+# interact with question editor
+@app.route("/question_menu", methods=["GET"])
+def question_menu():
+    return render_template(CREATE_QUESTION)
+
 # enter player data
 @app.route("/play_game", methods=["GET"])
 def play_game():
