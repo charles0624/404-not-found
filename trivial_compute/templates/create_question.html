@@ -2,31 +2,122 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, intital-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Poppins:wght@500&display=swap" rel="stylesheet">
     <title>Create A Question</title>
+    <style>
+        body {
+            font-family: 'Luckiest Guy', 'Montserrat';
+            background: linear-gradient(to bottom right, #002D72, #68ACE5);
+            color: white;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow:
+                -3px -3px 0 black,
+                3px -3px 0 black,
+                -3px  3px 0 black,
+                3px  3px 0 black;
+        }
+
+        form {
+            margin: 1rem 0;
+            padding: 1.5rem;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            max-width: 400px;
+            width: 100%;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 1rem;
+            text-align: left;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 0.6rem;
+            border-radius: 6px;
+            border: none;
+            margin-top: 0.3rem;
+            font-size: 1rem;
+        }
+
+        input[type="submit"] {
+            background-color: #F56600;
+            font-family: 'Poppins', sans-serif;
+            color: black;
+            border: none;
+            padding: 0.8rem 2rem;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+            margin-top: 1.2rem;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #FF9E1B;
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 158, 27, 0.8);
+        }
+
+        .status {
+            margin-top: 2rem;
+        }
+
+        .section {
+            display: inline-block;
+            margin-top: 1rem;
+        }
+    </style>
 </head>
 <body>
-    <h1> Enter question data: </h1>
+    <h1>Create A Question</h1>
 
-    <form action="create_question", method="POST">
-        <label for="question">question:</label><br>
-        <input type="text" id="question" name="question"><br>
-        <label for="answer">answer:</label><br>
-        <input type="text" id="answer" name="answer"><br><br>
-        <label for="category">category:</label><br>
-        <input type="text" id="category" name="category"><br><br>
-        <label for="deck_tags">deck tags:</label><br>
-        <input type="text" id="deck_tags" name="deck_tags"><br><br>
+    <form action="create_question" method="POST">
+        <label for="question">Question:</label>
+        <input type="text" id="question" name="question">
+
+        <label for="answer">Answer:</label>
+        <input type="text" id="answer" name="answer">
+
+        <label for="category">Category:</label>
+        <input type="text" id="category" name="category">
+
+        <label for="deck_tags">Deck Tags:</label>
+        <input type="text" id="deck_tags" name="deck_tags">
+
         <input type="submit" value="Submit">
     </form>
 
     {% if response_message %}
+    <div class="status">
         <h2>Status:</h2>
         <p>{{ response_message }}</p>
+    </div>
     {% endif %}
-    <h2> Return home </h2>
-    <form action="/", method="GET">
-        <input type="submit" value="home">
-    </form>
+
+    <div class="section">
+        <form action="/" method="GET">
+            <input type="submit" value="Home">
+        </form>
+    </div>
 </body>
 </html>
