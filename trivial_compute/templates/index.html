@@ -3,22 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEAM 404</title>
+    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Poppins:wght@500&display=swap" rel="stylesheet">
+    <title>TRIVIAL COMPUTE</title>
+    <style>
+        body {
+            font-family: 'Luckiest Guy', Tahoma, sans-serif;
+            background: linear-gradient(to bottom right, #002D72, #68ACE5);
+            color: white;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 3px solid #F1C400;
+            width: 0;
+            animation: typing 2.5s steps(20, end) forwards, blink 0.7s step-end infinite;
+
+            /* Outline Effects */
+            color: white;
+            text-shadow:
+                -4px -4px 0 black,
+                4px -4px 0 black,
+                -4px  4px 0 black,
+                4px  4px 0 black;
+        }
+
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 13ch }
+        }
+
+        @keyframes blink {
+            50% { border-color: transparent }
+        }
+
+        form{
+            margin: 1rem 0 ;
+            opacity: 0;
+            animation: fadeIn 1s ease forwards;
+            animation-delay: 2.6s;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        input[type="submit"] {
+            background-color: #F56600;
+            font-family: 'Poppins', sans-serif;
+            color: black;;
+            border: none;
+            padding: 0.8rem 2rem;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #FF9E1B;
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 158, 27, 0.8);
+        }
+
+        .section{
+            display: inline-block;
+            margin-top: 1rem;
+        }
+
+    </style>
 </head>
 <body>
     <h1>TRIVIAL COMPUTE</h1>
-    <br>
-    <p>Would you like to play a game?</p>
-    <form action="play_game", method="GET">
-        <p><input type="submit" name="play_button" value="yes"></input></p>
-    </form>
-    <form action="exit", method="GET">
-        <p><input type="submit" name="play_button" value="no"></input></p>
-    </form>
-    <br>
-    <p>Would you like to interact with the question database?</p>
-    <form action="question_menu", method="GET">
-        <p><input type="submit" name="question_button" value="yes"></input></p>
-    </form>
+
+    <div class="section">
+        <form action="play_game" method="GET">
+            <input type="submit" name="play_button" value="New Game">
+        </form>
+    </div>
+
+    <div class="section">
+        <form action="question_menu" method="GET">
+            <input type="submit" name="question_button" value="Question Editor">
+        </form>
+    </div>
 </body>
 </html>
