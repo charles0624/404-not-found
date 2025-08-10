@@ -1,11 +1,12 @@
+import copy
+import random
+import sys
+
 # web server and database stuff
 from flask import Flask, redirect, render_template, request, jsonify, url_for
 from pathlib import Path
 from flask_sqlalchemy import SQLAlchemy
-import random
 from sqlalchemy import desc
-import sys
-
 
 from models import db, Category, DeckTag, Question
 from game_object import COLORS, get_player
@@ -215,13 +216,13 @@ def delete_question():
     return render_template(DELETE_QUESTION, response_message=response_msg)
 
 
-from game_session import GameSession
-from game_session_manager import GameSessionManager
-from dice_service import DiceService
-from player_tracker import PlayerTracker
-from turn_manager import TurnManager
-from rule_engine import RuleEngine
-from data_access_stub import QuestionDataAccessStub
+#from game_session import GameSession
+#from game_session_manager import GameSessionManager
+#from dice_service import DiceService
+#from player_tracker import PlayerTracker
+#from turn_manager import TurnManager
+#from rule_engine import RuleEngine
+#from data_access_stub import QuestionDataAccessStub
 
 # full game states
 game_session = None
@@ -249,7 +250,7 @@ def display_board():
         request.form.get("player3", None),
         request.form.get("player4", None)
     ]
-    player_colors = COLORS
+    player_colors = copy.deepcopy(COLORS)
     list_len = len(player_colors)
     player_objs = list()
     # create player objects and assign each one a color
