@@ -245,21 +245,30 @@ def random_color_index(modulo_number):
 def display_board():
     # get player names
     player_list = [
-        request.form.get("player1", None),
-        request.form.get("player2", None),
-        request.form.get("player3", None),
-        request.form.get("player4", None)
+        request.form.get("player1"),
+        request.form.get("player2"),
+        request.form.get("player3"),
+        request.form.get("player4")
     ]
+
+    # check that player names are not empty
+    real_player_list = list()
+    for elem in player_list:
+        if len(elem) > 0:
+            real_player_list.append(elem)
+    if len(real_player_list) == 0:
+        return render_template(GAME_SESSION)
+
+    # create player objects and assign each one a color
     player_colors = copy.deepcopy(COLORS)
     list_len = len(player_colors)
     player_objs = list()
-    # create player objects and assign each one a color
-    for player in player_list:
+    for player in real_player_list:
         player_color = player_colors.pop(random_color_index(list_len))
         player_objs.append(get_player(player, player_color))
         list_len -= 1
 
-    # generate the game board
+    # generate the game board, populated with the players objects
     return render_template(GAME_SESSION, players=player_objs)
 
 
