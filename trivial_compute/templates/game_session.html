@@ -84,7 +84,9 @@
     <div class="player-list">
         {% if players %}
             {% for player in players %}
-                <p>{{ player.username }} - {{ player.color }}</p>
+                {% if player.username %}
+                    <p>{{ player.username }} - {{ player.color }}</p>
+                {% endif %}
             {% endfor %}
         {% else %}
             <p>No players found.</p>
