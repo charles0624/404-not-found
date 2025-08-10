@@ -22,7 +22,7 @@
     h1 {
       font-family: 'Luckiest Guy', cursive;
       font-size: clamp(2rem, 8vw, 5rem);
-      margin-bottom: 1rem;
+      margin-bottom: 0rem;
       color: white;
     }
 
@@ -54,8 +54,25 @@
       50% { border-color: transparent; }
     }
 
+    .subtitle {
+        font-family: 'Luckiest Guy', cursive;
+        font-weight: 500;
+        font-size: 1.5rem;
+        color: white;
+        margin-top: 0rem;
+        text-shadow:
+            -0.05em -0.05em 0 black,
+            0.05em -0.05em 0 black,
+            -0.05em  0.05em 0 black,
+            0.05em  0.05em 0 black;
+
+        opacity: 0;
+        animation: fadeIn 1s ease forwards;
+        animation-delay: 2.1s
+    }
+
     form {
-      margin: 1rem 0;
+
       opacity: 0;
       animation: fadeIn 1s ease forwards;
       animation-delay: 2.1s;
@@ -93,10 +110,11 @@
 </head>
 <body>
   <h1><span class="typewriter">TRIVIAL COMPUTE</span></h1>
+  <h2 class="subtitle">Team 404 Not Found</h2>
 
   <div class="section">
-    <form action="users_menu" method="GET">
-      <input type="submit" name="play_button" value="New Game">
+    <form action="play_game" method="GET">
+      <input type="submit" name="play_button" value="New Game" />
     </form>
   </div>
 
@@ -105,6 +123,5 @@
       <input type="submit" name="question_button" value="Question Editor" />
     </form>
   </div>
-
 </body>
 </html>
