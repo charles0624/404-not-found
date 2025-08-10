@@ -34,7 +34,7 @@ with app.app_context():
 
 HOME_PAGE = "index.html"
 USERS_MENU = "users_menu.html"
-GAME_SESSION = "game_session.html"
+GAME_SESSION = "game_ready.html"
 
 QUESTIONS_MENU = "questions_menu.html"
 CREATE_QUESTION = "create_question.html"
@@ -48,30 +48,26 @@ DELETE_QUESTION = "delete_question.html"
 #  Startup Routes
 #########
 #########
+# home page
 @app.route("/", methods=["GET"])
 def index():
     return render_template(HOME_PAGE)
 
-
+# quit
 @app.route("/exit", methods=["GET"])
 def exit():
     sys.exit()  # can't imagine this is recommended
-
-# enter player data
-@app.route("/play_game", methods=["GET"])
-def play_game():
-    return render_template(USERS_MENU)
-
-# interact with question editor
-@app.route("/question_menu", methods=["GET"])
-def question_menu():
-    return render_template(CREATE_QUESTION)
 
 #########
 #########
 #  Question Database Routes
 #########
 #########
+# interact with question editor
+@app.route("/question_menu", methods=["GET"])
+def question_menu():
+    return render_template(CREATE_QUESTION)
+
 # CREATE a question
 @app.route("/create_question", methods=["GET", "POST"])
 def create_question():
@@ -239,10 +235,15 @@ manager = None
 def random_color_index(modulo_number):
     return random.randint(0,100) % modulo_number # ensure it is random AND between length of list, inclusive
 
+# get users
+@app.route("/users_menu", methods=["GET"])
+def get_users():
+    return render_template(USERS_MENU)
 
-# called from USERS_MENU.html
-@app.route("/game_session", methods=["POST"])
-def display_board():
+# get users
+# called from 'users_menu.html'
+@app.route("/validate_users", methods=["POST"])
+def validate_users():
     # get player names
     player_list = [
         request.form.get("player1"),
@@ -270,7 +271,6 @@ def display_board():
 
     # generate the game board, populated with the players objects
     return render_template(GAME_SESSION, players=player_objs)
-
 
 
 # Game Initialization
