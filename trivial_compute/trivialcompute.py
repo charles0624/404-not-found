@@ -42,9 +42,11 @@ UPDATE_QUESTION = "update_question.html"
 DELETE_QUESTION = "delete_question.html"
 
 
-###
-#  Gameplay Routes
-###
+#########
+#########
+#  Startup Routes
+#########
+#########
 @app.route("/", methods=["GET"])
 def index():
     return render_template(HOME_PAGE)
@@ -54,62 +56,21 @@ def index():
 def exit():
     sys.exit()  # can't imagine this is recommended
 
-# interact with question editor
-@app.route("/question_menu", methods=["GET"])
-def question_menu():
-    return render_template(CREATE_QUESTION)
-
 # enter player data
 @app.route("/play_game", methods=["GET"])
 def play_game():
     return render_template(USERS_MENU)
 
-def random_color_index(modulo_number):
-    return random.randint(0,100) % modulo_number # ensure it is random AND between length of list, inclusive
+# interact with question editor
+@app.route("/question_menu", methods=["GET"])
+def question_menu():
+    return render_template(CREATE_QUESTION)
 
-# called from USERS_MENU
-@app.route("/game_session", methods=["POST"])
-def display_board():
-    # get player names
-    player_list = [
-        request.form.get("player1", None),
-        request.form.get("player2", None),
-        request.form.get("player3", None),
-        request.form.get("player4", None)
-    ]
-    player_colors = COLORS
-    list_len = len(player_colors)
-    player_objs = list()
-    # create player objects and assign each one a color
-    for player in player_list:
-        player_color = player_colors.pop(random_color_index(list_len))
-        player_objs.append(get_player(player, player_color))
-        list_len -= 1
-
-    # generate the game board
-
-    return render_template(GAME_SESSION, players=player_objs)
-
-# TODO
-# @app.route("settings", methods=["GET"])
-# def settings():
-#    pass
-#
-# @app.route("start_game", methods=["GET"])
-# def start_game():
-#    pass
-#
-
-###
+#########
+#########
 #  Question Database Routes
-###
-
-# TODO
-# @app.route("question_menu", methods=["GET"])
-# def question_menu():
-#    return render_template(QUESTIONS_MENU)
-
-
+#########
+#########
 # CREATE a question
 @app.route("/create_question", methods=["GET", "POST"])
 def create_question():
@@ -253,6 +214,122 @@ def delete_question():
         pass
     return render_template(DELETE_QUESTION, response_message=response_msg)
 
+
+from game_session import GameSession
+from game_session_manager import GameSessionManager
+from dice_service import DiceService
+from player_tracker import PlayerTracker
+from turn_manager import TurnManager
+from rule_engine import RuleEngine
+from data_access_stub import QuestionDataAccessStub
+
+# full game states
+game_session = None
+turn_manager = None
+rule_engine = None
+player_tracker = None
+manager = None
+
+#########
+#########
+#  Game Session Routes
+#########
+#########
+def random_color_index(modulo_number):
+    return random.randint(0,100) % modulo_number # ensure it is random AND between length of list, inclusive
+
+
+# called from USERS_MENU.html
+@app.route("/game_session", methods=["POST"])
+def display_board():
+    # get player names
+    player_list = [
+        request.form.get("player1", None),
+        request.form.get("player2", None),
+        request.form.get("player3", None),
+        request.form.get("player4", None)
+    ]
+    player_colors = COLORS
+    list_len = len(player_colors)
+    player_objs = list()
+    # create player objects and assign each one a color
+    for player in player_list:
+        player_color = player_colors.pop(random_color_index(list_len))
+        player_objs.append(get_player(player, player_color))
+        list_len -= 1
+
+    # generate the game board
+    return render_template(GAME_SESSION, players=player_objs)
+
+
+
+# Game Initialization
+@app.route('/api/settings', methods=['POST'])
+def setup_game():
+    global game_session, manager, turn_manager, rule_engine, player_tracker
+    data = request.get_json()
+    users = data.get("users", [])       # e.g.: ["Alice", "Bob"]
+    topics = data.get("topics", [])     # e.g.: ["Math", "Science"]
+
+    game_session = GameSession(users, topics)
+    manager = GameSessionManager(users, topics)
+    turn_manager = TurnManager(users)
+    rule_engine = RuleEngine()
+    player_tracker = PlayerTracker(users)
+
+    db = QuestionDataAccessStub()
+    question = db.get_mock_question()
+    print(f"[Stub] Game Logic received question: {question}")
+
+    return jsonify({"status": "game session initialized", "players": users})
+
+
+# roll dice
+@app.route('/api/roll-dice', methods=['POST'])
+def roll_dice():
+    data = request.get_json()
+    player = data.get("player", "Unknown")
+    roll = DiceService.roll()
+    print(f"[Stub] Player '{player}' rolled a {roll}")
+    valid_moves = [f"Space {i}" for i in range(1, roll + 1)]
+    return jsonify({"roll": roll, "validMoves": valid_moves})
+
+
+# player move
+@app.route('/api/move', methods=['POST'])
+def move_player():
+    data = request.get_json()
+    player = data.get("player")
+    space = data.get("target")
+
+    # real space change
+    player_tracker.update_position(player, 1)
+    print(f"[Stub] {player} moved to {space}")
+
+    return jsonify({
+        "status": "moved",
+        "player": player,
+        "newPosition": space
+    })
+
+
+# answer verify and chips allocation
+@app.route('/api/answer', methods=['POST'])
+def check_answer():
+    data = request.get_json()
+    player = data.get("player")
+    answer = data.get("answer")
+
+    correct = rule_engine.validate_answer(answer)  # always True in staub
+
+    if correct:
+        chip = "math"
+        player_tracker.add_chip(player, chip)
+        print(f"[Stub] {player} answered correctly and earned chip {chip}")
+        return jsonify({"correct": True, "chip_awarded": chip})
+    else:
+        print(f"[Stub] {player} answered incorrectly")
+        return jsonify({"correct": False})
 
 if __name__ == "__main__":
     app.run(debug=True)
