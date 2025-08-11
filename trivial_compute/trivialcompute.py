@@ -1,6 +1,7 @@
 import copy
 import random
 import sys
+from werkzeug.exceptions import NotFound
 
 # web server and database stuff
 from flask import Flask, redirect, render_template, request, jsonify, url_for
@@ -159,7 +160,12 @@ def update_question():
     # UPDATE question
     if request.method == "POST":
         question_id = request.form.get("question_id", None)
-        question_obj = Question.query.get_or_404(question_id)
+
+        try:
+            question_obj = Question.query.get_or_404(question_id)
+        except NotFound:
+            response_msg = "Question ID Not Found! Update not Complete."
+            return render_template(UPDATE_QUESTION, response_message=response_msg)
 
         question = request.form.get("question", None)
         answer = request.form.get("answer", None)
@@ -202,7 +208,13 @@ def delete_question():
     # DELETE question
     if request.method == "POST":
         question_id = request.form.get("question_id", None)
-        question = Question.query.get_or_404(question_id)
+
+        try:
+            question = Question.query.get_or_404(question_id)
+        except NotFound:
+            response_msg = "Question ID Not Found! Delete not Complete."
+            return render_template(DELETE_QUESTION, response_message=response_msg)
+
         if question.deck_tags:
             for deck_tag in question.deck_tags:
                 question.deck_tags.remove(deck_tag)
