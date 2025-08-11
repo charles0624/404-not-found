@@ -120,7 +120,8 @@
         <h2>Game:</h2>
         <div class="good2go">
             <form action="game_session", method="GET">
-                <input type="submit" name="go_button" value="Start Game">
+                <input type="hidden", name="game_players", value=players>
+                <input type="submit" name="start_game" value="Start Game">
             </form>
         </div>
     {% else %}
@@ -141,6 +142,7 @@
             <input type="text" id="player4" name="player4">
 
             <input type="submit" value="Submit">
+            <input type="reset" value="Reset">
         </form>
     {% endif %}
 

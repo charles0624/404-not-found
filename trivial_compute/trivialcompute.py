@@ -296,7 +296,11 @@ def validate_users():
 
     # generate the game board, populated with the players objects
     return render_template(USERS_MENU, players=player_objs)
-    #return render_template(GAME_SESSION, players=player_objs)
+
+# called from USERS_MENU after correct player validation
+@app.route("/game_session", methods=["GET", "POST"])
+def game_session():
+    return render_template(GAME_SESSION)
 
 
 # Game Initialization
