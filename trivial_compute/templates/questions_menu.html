@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Questions Menu - TRIVIAL COMPUTE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Poppins:wght@500&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Luckiest Guy', 'Montserrat', sans-serif;
+      background: linear-gradient(to bottom right, #002D72, #68ACE5);
+      color: white;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    h1 {
+      font-family: 'Luckiest Guy', cursive;
+      font-size: clamp(2rem, 8vw, 5rem);
+      margin-bottom: 0.5rem;
+      color: white;
+      text-shadow:
+        -0.05em -0.05em 0 black,
+         0.05em -0.05em 0 black,
+        -0.05em  0.05em 0 black,
+         0.05em  0.05em 0 black;
+    }
+
+    .subtitle {
+      font-family: 'Luckiest Guy', cursive;
+      font-weight: 500;
+      font-size: 1.5rem;
+      color: white;
+      margin-top: 0;
+      margin-bottom: 2rem;
+      text-shadow:
+        -0.05em -0.05em 0 black,
+         0.05em -0.05em 0 black,
+        -0.05em  0.05em 0 black,
+         0.05em  0.05em 0 black;
+      opacity: 0;
+      animation: fadeIn 1s ease forwards;
+      animation-delay: 0.5s;
+    }
+
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(140px, 1fr));
+      gap: 1.5rem 2rem;
+      width: 100%;
+      max-width: 360px;
+      justify-items: center;
+    }
+
+    .section {
+      width: 100%;
+      max-width: 320px;
+    }
+
+    form {
+      margin: 0; /* Remove default margin so spacing is from grid gap */
+      opacity: 0;
+      animation: fadeIn 1s ease forwards;
+      animation-delay: 1.5s;
+      display: flex;
+      justify-content: center;
+    }
+
+    input[type="submit"] {
+      background-color: #F56600;
+      font-family: 'Poppins', sans-serif;
+      color: black;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      font-weight: bold;
+      font-size: 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transition: transform 0.2s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+      min-width: auto;
+      max-width: 100%;
+      white-space: normal;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #FF9E1B;
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(255, 158, 27, 0.8);
+    }
+
+    /* Return Home Button Styling */
+    input.return-home {
+      background-color: #68ACE5;
+      color: white;
+      box-shadow: 0 4px 10px rgba(0, 102, 204, 0.5);
+      transition: transform 0.2s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+      min-width: 200px;
+    }
+
+    input.return-home:hover {
+      background-color: #002D72;
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(0, 74, 153, 0.8);
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Question Database</h1>
+  <h2 class="subtitle">Manage your Sets</h2>
+
+  <div class="button-grid">
+    <div class="section">
+      <form action="create_question" method="GET">
+        <input type="submit" value="Create Question" />
+      </form>
+    </div>
+
+    <div class="section">
+      <form action="questions" method="GET">
+        <input type="submit" value="Read Questions" />
+      </form>
+    </div>
+
+    <div class="section">
+      <form action="update_question" method="GET">
+        <input type="submit" value="Update Question" />
+      </form>
+    </div>
+
+    <div class="section">
+      <form action="delete_question" method="GET">
+        <input type="submit" value="Delete Question" />
+      </form>
+    </div>
+  </div>
+
+  <div class="section" style="margin-top: 2rem;">
+    <form action="/" method="GET">
+      <input type="submit" class="return-home" value="Return Home" />
+    </form>
+  </div>
+</body>
+</html>
