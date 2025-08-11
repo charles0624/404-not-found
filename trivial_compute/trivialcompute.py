@@ -61,25 +61,15 @@ def index():
 def exit():
     sys.exit()  # can't imagine this is recommended
 
-# enter player data
-@app.route("/play_game", methods=["GET"])
-def play_game():
-    return render_template(USERS_MENU)
-
-# interact with question editor
-@app.route("/question_menu", methods=["GET"])
-def question_menu():
-    return render_template(QUESTIONS_MENU)
-
 #########
 #########
 #  Question Database Routes
 #########
 #########
 # interact with question editor
-#@app.route("/question_menu", methods=["GET"])
-#def question_menu():
-#    return render_template(CREATE_QUESTION)
+@app.route("/question_menu", methods=["GET"])
+def question_menu():
+    return render_template(QUESTIONS_MENU)
 
 # CREATE a question
 @app.route("/create_question", methods=["GET", "POST"])
@@ -260,6 +250,7 @@ def random_color_index(modulo_number):
     return random.randint(0,100) % modulo_number # ensure it is random AND between length of list, inclusive
 
 # get users
+
 @app.route("/users_menu", methods=["GET", "POST"])
 def get_users():
     return render_template(USERS_MENU)
@@ -301,7 +292,6 @@ def validate_users():
 @app.route("/game_session", methods=["GET", "POST"])
 def game_session():
     return render_template(GAME_SESSION)
-
 
 # Game Initialization
 @app.route('/api/settings', methods=['POST'])
