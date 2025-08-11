@@ -36,7 +36,8 @@ with app.app_context():
 
 HOME_PAGE = "index.html"
 USERS_MENU = "users_menu.html"
-GAME_SESSION = "game_ready.html"
+GAME_READY = "game_ready.html"
+GAME_SESSION = "game_session.html"
 
 QUESTIONS_MENU = "questions_menu.html"
 CREATE_QUESTION = "create_question.html"
@@ -249,7 +250,8 @@ def random_color_index(modulo_number):
     return random.randint(0,100) % modulo_number # ensure it is random AND between length of list, inclusive
 
 # get users
-@app.route("/users_menu", methods=["GET"])
+
+@app.route("/users_menu", methods=["GET", "POST"])
 def get_users():
     return render_template(USERS_MENU)
 
@@ -271,7 +273,8 @@ def validate_users():
         if len(elem) > 0:
             real_player_list.append(elem)
     if len(real_player_list) == 0:
-        return render_template(GAME_SESSION)
+        data = {"user_data": "fail"}
+        return render_template(USERS_MENU, no_users=data)
 
     # create player objects and assign each one a color
     player_colors = copy.deepcopy(COLORS)
@@ -283,8 +286,12 @@ def validate_users():
         list_len -= 1
 
     # generate the game board, populated with the players objects
-    return render_template(GAME_SESSION, players=player_objs)
+    return render_template(USERS_MENU, players=player_objs)
 
+# called from USERS_MENU after correct player validation
+@app.route("/game_session", methods=["GET", "POST"])
+def game_session():
+    return render_template(GAME_SESSION)
 
 # Game Initialization
 @app.route('/api/settings', methods=['POST'])
