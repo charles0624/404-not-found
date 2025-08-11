@@ -1,7 +1,6 @@
 import copy
 import random
 import sys
-from werkzeug.exceptions import NotFound
 
 # web server and database stuff
 from flask import Flask, redirect, render_template, request, jsonify, url_for
@@ -11,6 +10,8 @@ from sqlalchemy import desc
 
 from models import db, Category, DeckTag, Question
 from game_object import COLORS, get_player
+
+from werkzeug.exceptions import NotFound
 
 # name the app as the parent dir
 APP_NAME = Path(__file__).stem
