@@ -65,7 +65,7 @@ def play_game():
 # interact with question editor
 @app.route("/question_menu", methods=["GET"])
 def question_menu():
-    return render_template(CREATE_QUESTION)
+    return render_template(QUESTIONS_MENU)
 
 #########
 #########
