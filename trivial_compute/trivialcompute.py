@@ -61,6 +61,11 @@ def index():
 def exit():
     sys.exit()  # can't imagine this is recommended
 
+# enter player data
+@app.route("/play_game", methods=["GET"])
+def play_game():
+    return render_template(USERS_MENU)
+
 #########
 #########
 #  Question Database Routes
