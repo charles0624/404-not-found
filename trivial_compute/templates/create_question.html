@@ -32,13 +32,14 @@
 
         form {
             margin: 1rem 0;
-            padding: 1.5rem;
+            padding: 1.5rem 2rem;
             background: rgba(0,0,0,0.3);
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.4);
             max-width: 400px;
             width: 100%;
             font-family: 'Poppins', sans-serif;
+            box-sizing: border-box;
         }
 
         label {
@@ -55,6 +56,8 @@
             border: none;
             margin-top: 0.3rem;
             font-size: 1rem;
+            box-sizing: border-box;
+            margin-bottom: 0.8rem;
         }
 
         input[type="submit"] {
@@ -70,6 +73,10 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             transition: transform 0.2s ease, background-color 0.3s ease, box-shadow 0.3s ease;
             margin-top: 1.2rem;
+            min-width: 140px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         input[type="submit"]:hover {
@@ -78,14 +85,49 @@
             box-shadow: 0 6px 20px rgba(255, 158, 27, 0.8);
         }
 
-        .status {
-            margin-top: 2rem;
+        .status p{
+            margin-top: 1.5rem;
+            font-size: 1.4rem;
+            font-weight: bold;
+            text-shadow:
+                -0.05em -0.05em 0 black,
+                0.05em -0.05em 0 black,
+                -0.05em  0.05em 0 black,
+                0.05em  0.05em 0 black;
         }
 
-        .section {
-            display: inline-block;
+        .return-home-form{
+            background: none;
+            padding: 0;
+            box-shadow: none
+        }
+
+        input.return-home{
+            background-color: #68ACE5;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 102, 204, 0.5);
+            transition: transform 0.2s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+            min-width: 140px;
+            display: block;
+        }
+
+        input.return-home:hover {
+            background-color: #002D72;
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 74, 153, 0.8);
+        }
+
+        .button-row{
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
             margin-top: 1rem;
         }
+
+        .button-row form{
+            margin: 0;
+        }
+
     </style>
 </head>
 <body>
@@ -93,13 +135,13 @@
 
     <form action="create_question" method="POST">
         <label for="question">Question:</label>
-        <input type="text" id="question" name="question">
+        <input type="text" id="question" name="question" required>
 
         <label for="answer">Answer:</label>
-        <input type="text" id="answer" name="answer">
+        <input type="text" id="answer" name="answer" required>
 
         <label for="category">Category:</label>
-        <input type="text" id="category" name="category">
+        <input type="text" id="category" name="category" required>
 
         <label for="deck_tags">Deck Tags:</label>
         <input type="text" id="deck_tags" name="deck_tags">
@@ -109,15 +151,17 @@
 
     {% if response_message %}
     <div class="status">
-        <h2>Status:</h2>
         <p>{{ response_message }}</p>
     </div>
     {% endif %}
 
-    <div class="section">
-        <form action="/" method="GET">
-            <input type="submit" value="Home">
-        </form>
-    </div>
+    <div class="button-row">
+    <form action="/question_menu" method="GET" class="return-home-form">
+      <input type="submit" class="return-home" value="Questions Menu" />
+    </form>
+    <form action="/" method="GET" class="return-home-form">
+      <input type="submit" class="return-home" value="Return Home" />
+    </form>
+</div>
 </body>
 </html>
