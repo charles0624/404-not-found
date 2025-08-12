@@ -84,6 +84,28 @@
             box-shadow: 0 6px 20px rgba(255, 158, 27, 0.8);
         }
 
+        input[type="reset"] {
+            background-color: #F56600;
+            font-family: 'Poppins', sans-serif;
+            color: black;
+            border: none;
+            padding: 0.8rem 2rem;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+            margin-top: 1.2rem;
+        }
+
+        input[type="reset"]:hover {
+            background-color: #FF9E1B;
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 158, 27, 0.8);
+        }
+
+        .status {
         .status {
             margin-top: 2rem;
         }
@@ -95,30 +117,12 @@
     </style>
 </head>
 <body>
-    <h1>Input Player Names</h1>
-    <h2>(Empty fields will not be added)</h2>
-
-    <form action="validate_users" method="POST">
-        <label for="player1">Player 1:</label>
-        <input type="text" id="player1" name="player1">
-
-        <label for="player2">Player 2:</label>
-        <input type="text" id="player2" name="player2">
-
-        <label for="player3">Player 3:</label>
-        <input type="text" id="player3" name="player3">
-
-        <label for="player4">Player 4:</label>
-        <input type="text" id="player4" name="player4">
-
-        <input type="submit" value="Submit">
-    </form>
-
     {% if response_message %}
     <div class="status">
         <h2>Status:</h2>
         <p>{{ response_message }}</p>
     </div>
+    {% endif %}
     {% if no_users %}
         <div class="status">
             <h1>Status:</h1>
@@ -168,7 +172,6 @@
             <input type="submit" value="Submit">
             <input type="reset" value="Reset">
         </form>
-        {% endif %}
     {% endif %}
 
     <h1>Home:</h1>
