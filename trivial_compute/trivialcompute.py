@@ -56,15 +56,18 @@ DELETE_QUESTION = "delete_question.html"
 def index():
     return render_template(HOME_PAGE)
 
+
 # quit
 @app.route("/exit", methods=["GET"])
 def exit():
     sys.exit()  # can't imagine this is recommended
 
+
 # enter player data
 @app.route("/play_game", methods=["GET"])
 def play_game():
     return render_template(USERS_MENU)
+
 
 #########
 #########
@@ -75,6 +78,7 @@ def play_game():
 @app.route("/question_menu", methods=["GET"])
 def question_menu():
     return render_template(QUESTIONS_MENU)
+
 
 # CREATE a question
 @app.route("/create_question", methods=["GET", "POST"])
@@ -108,7 +112,7 @@ def create_question():
     # 3. Handle deck tags (many-to-many)
     # for tag_name in data.get('deck_tags', []):
     if deck_tags:
-        all_tags = deck_tags.split(':')
+        all_tags = deck_tags.split(":")
         for tag_name in all_tags:
             tag = DeckTag.query.filter_by(name=tag_name).first()
             if not tag:
@@ -188,7 +192,7 @@ def update_question():
             question_obj.category = table_category
         if deck_tags:
             question_obj.deck_tags = []
-            for tag_name in deck_tags.split(':'):
+            for tag_name in deck_tags.split(":"):
                 tag = DeckTag.query.filter_by(name=tag_name).first()
                 if not tag:
                     tag = DeckTag(name=tag_name)
@@ -231,13 +235,13 @@ def delete_question():
     return render_template(DELETE_QUESTION, response_message=response_msg)
 
 
-#from game_session import GameSession
-#from game_session_manager import GameSessionManager
-#from dice_service import DiceService
-#from player_tracker import PlayerTracker
-#from turn_manager import TurnManager
-#from rule_engine import RuleEngine
-#from data_access_stub import QuestionDataAccessStub
+# from game_session import GameSession
+# from game_session_manager import GameSessionManager
+# from dice_service import DiceService
+# from player_tracker import PlayerTracker
+# from turn_manager import TurnManager
+# from rule_engine import RuleEngine
+# from data_access_stub import QuestionDataAccessStub
 
 # full game states
 game_session = None
@@ -246,19 +250,25 @@ rule_engine = None
 player_tracker = None
 manager = None
 
+
 #########
 #########
 #  Game Session Routes
 #########
 #########
 def random_color_index(modulo_number):
-    return random.randint(0,100) % modulo_number # ensure it is random AND between length of list, inclusive
+    return (
+        random.randint(0, 100) % modulo_number
+    )  # ensure it is random AND between length of list, inclusive
+
 
 # get users
+
 
 @app.route("/users_menu", methods=["GET", "POST"])
 def get_users():
     return render_template(USERS_MENU)
+
 
 # get users
 # called from 'users_menu.html'
@@ -269,7 +279,7 @@ def validate_users():
         request.form.get("player1"),
         request.form.get("player2"),
         request.form.get("player3"),
-        request.form.get("player4")
+        request.form.get("player4"),
     ]
 
     # check that player names are not empty
@@ -293,18 +303,20 @@ def validate_users():
     # generate the game board, populated with the players objects
     return render_template(USERS_MENU, players=player_objs)
 
+
 # called from USERS_MENU after correct player validation
 @app.route("/game_session", methods=["GET", "POST"])
 def game_session():
     return render_template(GAME_SESSION)
 
+
 # Game Initialization
-@app.route('/api/settings', methods=['POST'])
+@app.route("/api/settings", methods=["POST"])
 def setup_game():
     global game_session, manager, turn_manager, rule_engine, player_tracker
     data = request.get_json()
-    users = data.get("users", [])       # e.g.: ["Alice", "Bob"]
-    topics = data.get("topics", [])     # e.g.: ["Math", "Science"]
+    users = data.get("users", [])  # e.g.: ["Alice", "Bob"]
+    topics = data.get("topics", [])  # e.g.: ["Math", "Science"]
 
     game_session = GameSession(users, topics)
     manager = GameSessionManager(users, topics)
@@ -320,7 +332,7 @@ def setup_game():
 
 
 # roll dice
-@app.route('/api/roll-dice', methods=['POST'])
+@app.route("/api/roll-dice", methods=["POST"])
 def roll_dice():
     data = request.get_json()
     player = data.get("player", "Unknown")
@@ -331,7 +343,7 @@ def roll_dice():
 
 
 # player move
-@app.route('/api/move', methods=['POST'])
+@app.route("/api/move", methods=["POST"])
 def move_player():
     data = request.get_json()
     player = data.get("player")
@@ -341,15 +353,11 @@ def move_player():
     player_tracker.update_position(player, 1)
     print(f"[Stub] {player} moved to {space}")
 
-    return jsonify({
-        "status": "moved",
-        "player": player,
-        "newPosition": space
-    })
+    return jsonify({"status": "moved", "player": player, "newPosition": space})
 
 
 # answer verify and chips allocation
-@app.route('/api/answer', methods=['POST'])
+@app.route("/api/answer", methods=["POST"])
 def check_answer():
     data = request.get_json()
     player = data.get("player")
@@ -365,6 +373,7 @@ def check_answer():
     else:
         print(f"[Stub] {player} answered incorrectly")
         return jsonify({"correct": False})
+
 
 if __name__ == "__main__":
     app.run(debug=True)
