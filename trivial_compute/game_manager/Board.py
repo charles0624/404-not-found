@@ -5,6 +5,7 @@ import requests
 
 from typing import Optional
 
+
 # my guess as to what's in the database
 class Board_Args(pydantic.BaseModel):
     # do not allow creation of unspecified variables in the class, and do not perform
@@ -36,18 +37,18 @@ class Board:
         # the distance from A-F  to X is 6
         # all players start at the hub.
         self.board = {
-            "A": ["F", "B", "X"], # -7, 7, 6
+            "A": ["F", "B", "X"],  # -7, 7, 6
             "B": ["A", "C", "X"],
             "C": ["B", "D", "X"],
             "D": ["C", "E", "X"],
             "E": ["D", "F", "X"],
             "F": ["E", "A", "X"],
-            "X": ["A", "B", "C", "D", "E", "F", "X"], # 6,6,6,6,6,6,0
+            "X": ["A", "B", "C", "D", "E", "F", "X"],  # 6,6,6,6,6,6,0
         }
 
         # colors = "red" "orange" "yellow" "green" "blue" "violet"
         # A = red B: green, SILVER, yellow, violet, SILVER, orange
-        #         F: green, SILVER, 
+        #         F: green, SILVER,
         #         X: green
         # B = green
         # C = blue
@@ -56,7 +57,6 @@ class Board:
         # F = violet
 
         print(self.board)
-
 
         self.used_question_ids = []
 
