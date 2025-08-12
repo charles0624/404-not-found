@@ -3,11 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Poppins:wght@500&display=swap" rel="stylesheet">
     <title>TRIVIAL COMPUTE</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/game_session_styles.css') }}">
+    <style>
+        body {
+            font-family: 'Luckiest Guy', 'Montserrat';
+            background: linear-gradient(to bottom right, #002D72, #68ACE5);
+            color: white;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow:
+                -3px -3px 0 black,
+                3px -3px 0 black,
+                -3px  3px 0 black,
+                3px  3px 0 black;
+        }
+
+        h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .player-list {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            max-width: 400px;
+            width: 100%;
+            margin-bottom: 1.5rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        input[type="submit"] {
+            background-color: #F56600;
+            font-family: 'Poppins', sans-serif;
+            color: black;
+            border: none;
+            padding: 0.8rem 2rem;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #FF9E1B;
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 158, 27, 0.8);
+        }
+
+        /* Board container */
+        .container {
+            display: grid;
+            grid-template-columns: repeat(9, 90px);
+            grid-template-rows: repeat(9, 90px);
+            gap: 4px;
+            margin-top: 2rem;
+        }
+
+        /* Default square */
+        .grid-item {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+
+            /* Center text */
+            display: flex;                /* enable flexbox */
+            align-items: center;          /* vertical centering */
+            justify-content: center;      /* horizontal centering */
+
+            /* Text styling */
+            font-family: 'Poppins', sans-serif;
+            font-weight: bold;
+            color: black;  
+        }
+
+        /* Center square */
+        .center {
+            background: gold;
+            border: 3px solid black;
+        }
+
+        /* HQ category colors */
+        .hq-blue { background: dodgerblue; border: 3px solid black; }
+        .hq-pink { background: hotpink; border: 3px solid black; }
+        .hq-yellow { background: gold; border: 3px solid black; }
+        .hq-green { background: limegreen; border: 3px solid black; }
+
+        /* Spokes */
+        .spoke {
+            background: rgba(255, 255, 255, 0.7);
+            border: 2px solid black;
+        }
+
+        /* quadrant */
+        .quadrant {
+            background: transparent; /* Keep the quadrant empty */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 1rem;
+            color: white;
+            text-shadow:
+                -1px -1px 0 black,
+                 1px -1px 0 black,
+                -1px  1px 0 black,
+                 1px  1px 0 black;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
     <h1>TRIVIAL COMPUTE</h1>
+    <div class="container">
+        {% for row in range(9) %}
+            {% for col in range(9) %}
+                {% set is_perimeter = (row == 0 or row == 8 or col == 0 or col == 8) %}
+                {% set is_spoke = (row == 4 or col == 4) %}
+                {% if (row == 0 and col == 0) or (row == 0 and col == 8) 
+                or (row == 8 and col == 0) or (row == 8 and col == 8)%}
+                    <div class="grid-item spoke">Roll Again</div>
+                {% elif row == 4 and col == 4 %}
+                    <div class="grid-item center">Trival Compute</div>
+                {% elif row == 0 and col == 4 %}
+                    <div class="grid-item hq-blue">HQ</div>
+                {% elif (row == 1 and col == 0) or (row == 1 and col == 8)  
+                or (row == 4 and col == 3) or (row == 4 and col == 7)
+                or (row == 5 and col == 0) or (row == 5 and col == 8)
+                or (row == 6 and col == 4) or (row == 8 and col == 2)
+                or (row == 8 and col == 6)%}
+                    <div class="grid-item hq-blue"></div>
+                {% elif row == 4 and col == 8 %}
+                    <div class="grid-item hq-pink">HQ</div>
+                {% elif (row == 0 and col == 3) or (row == 0 and col == 7)  
+                or (row == 2 and col == 0) or (row == 3 and col == 4)
+                or (row == 4 and col == 2) or (row == 6 and col == 0)
+                or (row == 7 and col == 4) or (row == 8 and col == 3)
+                or (row == 8 and col == 7)%}
+                    <div class="grid-item hq-pink"></div>
+                {% elif row == 8 and col == 4 %}
+                    <div class="grid-item hq-yellow">HQ</div>
+                {% elif (row == 0 and col == 2) or (row == 0 and col == 6)  
+                or (row == 2 and col == 4) or (row == 3 and col == 0)
+                or (row == 3 and col == 8) or (row == 4 and col == 1)
+                or (row == 4 and col == 5) or (row == 7 and col == 0)
+                or (row == 7 and col == 8)%}
+                    <div class="grid-item hq-yellow"></div>
+                {% elif row == 4 and col == 0 %}
+                    <div class="grid-item hq-green">HQ</div>
+                {% elif (row == 0 and col == 1) or (row == 0 and col == 5)  
+                or (row == 1 and col == 4) or (row == 2 and col == 8)
+                or (row == 4 and col == 6) or (row == 5 and col == 4)
+                or (row == 6 and col == 8) or (row == 8 and col == 1)
+                or (row == 8 and col == 5)%}
+                    <div class="grid-item hq-green"></div>
+                {% elif is_perimeter or is_spoke %}
+                    <div class="grid-item spoke"></div>
+                    {% elif row == 2 and col == 2 and players|length > 0 %}
+                    <div class="grid-item quadrant">{{ players[0].username }}</div>
+                {% elif row == 2 and col == 6 and players|length > 1 %}
+                    <div class="grid-item quadrant">{{ players[1].username }}</div>
+                {% elif row == 6 and col == 2 and players|length > 2 %}
+                    <div class="grid-item quadrant">{{ players[2].username }}</div>
+                {% elif row == 6 and col == 6 and players|length > 3 %}
+                    <div class="grid-item quadrant">{{ players[3].username }}</div>
+                {% else %}
+                    <div>&nbsp;</div>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    </div>
     {% if players %}
         <h2>Players:</h2>
         <div class="player-list">
@@ -19,43 +199,20 @@
         </div>
 
         <h2>Game:</h2>
-        <div class="good2go">
-            <form action="bootup", method="GET">
-                <input type="submit" name="go_button" value="Start Game">
-            </form>
-        </div>
+        <form action="bootup" method="GET">
+            <input type="submit" name="go_button" value="Start Game">
+        </form>
     {% else %}
         <h2>No Players Detected</h2>
-        <h2>Input players:</h2>
-        <div class="new_players">
-            <form action="users_menu", method="GET">
-                <input type="submit" name="player_button" value="Input Players">
-            </form>
-        </div>
+        <h2>Input Players:</h2>
+        <form action="users_menu" method="GET">
+            <input type="submit" name="player_button" value="Input Players">
+        </form>
     {% endif %}
 
     <h2>Home:</h2>
-    <div class="back_home">
-        <form action="/", method="GET">
-            <input type="submit" name="home_button" value="Home">
-        </form>
-    <div class="container">
-        <div class="grid-item">&nbsp;</div>
-        <div class="grid-item">&nbsp;</div>
-        <div class="grid-item">&nbsp;</div>
-        <div class="grid-item">&nbsp;</div>
-        <div class="grid-item">&nbsp;</div>
-        <div class="grid-item">&nbsp;</div>
-        <div class="grid-item">&nbsp;</div>
-        <div class="grid-item">&nbsp;</div>
-        <div class="grid-item">&nbsp;</div>
-        <div class="grid-item">&nbsp;</div>
-        <div class="grid-item">&nbsp;</div>
-        <div class="grid-item">&nbsp;</div>
-        <div class="grid-item">&nbsp;</div>
-        <div class="grid-item">&nbsp;</div>
-        <div class="grid-item">&nbsp;</div>
-        <div class="grid-item">&nbsp;</div>
-    </div>
+    <form action="/" method="GET">
+        <input type="submit" name="home_button" value="Home">
+    </form>
 </body>
 </html>
