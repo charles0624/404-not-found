@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TRIVIAL COMPUTE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Poppins:wght@500&display=swap" rel="stylesheet" />
+  <style>
+    body{
+      font-family:'Luckiest Guy','Montserrat',sans-serif;
+      background:linear-gradient(to bottom right,#002D72,#68ACE5);
+      color:white;margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:2rem;text-align:center;
+    }
+    h1{
+      font-family:'Luckiest Guy',cursive;font-size:3.5rem;margin-bottom:1rem;
+      text-shadow:-3px -3px 0 black,3px -3px 0 black,-3px 3px 0 black,3px 3px 0 black;
+    }
+    h2{font-family:'Poppins',sans-serif;font-size:1.5rem;margin-top:1.5rem}
+
+    /* board */
+    .container{display:grid;grid-template-columns:repeat(9,90px);grid-template-rows:repeat(9,90px);gap:4px;margin-top:2rem}
+    .grid-item{
+      background:rgba(255,255,255,0.3);border-radius:6px;display:flex;align-items:center;justify-content:center;
+      font-family:'Poppins',sans-serif;font-weight:bold;color:black;
+    }
+    .center{background:gold;border:3px solid black}
+    .hq-blue{background:dodgerblue;border:3px solid black}
+    .hq-pink{background:hotpink;border:3px solid black}
+    .hq-yellow{background:gold;border:3px solid black}
+    .hq-green{background:limegreen;border:3px solid black}
+    .spoke{background:rgba(255,255,255,.7);border:2px solid black}
+    .quadrant{
+      background:transparent;display:flex;align-items:center;justify-content:center;
+      font-family:'Luckiest Guy',cursive;font-size:1rem;color:white;
+      text-shadow:-1px -1px 0 black,1px -1px 0 black,-1px 1px 0 black,1px 1px 0 black;text-align:center;
+    }
+
+    /* player list */
+    .player-list{
+      background:rgba(0,0,0,.3);border-radius:12px;padding:1rem 2rem;
+      box-shadow:0 4px 12px rgba(0,0,0,.4);max-width:400px;width:100%;margin-bottom:1.5rem;
+      font-family:'Poppins',sans-serif;
+    }
+
+
+    .btn{
+      background-color:#F56600;color:black;border:none;padding:.8rem 1.5rem;font-weight:bold;font-size:1.1rem;border-radius:8px;cursor:pointer;
+      box-shadow:0 4px 10px rgba(0,0,0,.3);transition:transform .2s ease, background-color .3s ease, box-shadow .3s ease;
+    }
+    .btn:hover{background-color:#FF9E1B;transform:scale(1.05);box-shadow:0 6px 20px rgba(255,158,27,.8)}
+    .btn-secondary{
+      background-color:#68ACE5;color:white;border:none;padding:.8rem 1.5rem;font-weight:bold;font-size:1.1rem;border-radius:8px;cursor:pointer;
+      box-shadow:0 4px 10px rgba(0,102,204,.5);transition:transform .2s ease, background-color .3s ease, box-shadow .3s ease;
+    }
+    .btn-secondary:hover{background-color:#002D72;transform:scale(1.05);box-shadow:0 6px 20px rgba(0,74,153,.8)}
+
+    .panel{
+      background:rgba(0,0,0,.3);border-radius:12px;padding:1rem;
+      box-shadow:0 4px 12px rgba(0,0,0,.4);
+      width:100%;max-width:900px;margin-top:1rem;font-family:'Poppins',sans-serif;
+    }
+    .panel-row{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;align-items:center;margin:.5rem 0}
+    .panel input[type="text"]{
+      padding:.7rem 1rem;border-radius:8px;border:none;min-width:240px;font-family:'Poppins',sans-serif
+    }
+    .status{white-space:pre-line;text-align:left;background:rgba(255,255,255,.1);padding:.8rem;border-radius:8px}
+    .muted{opacity:.9}
+  </style>
+</head>
+<body>
+  <h1>TRIVIAL COMPUTE</h1>
+
+  <div class="container">
+    {% for row in range(9) %}
+      {% for col in range(9) %}
+        {% set is_perimeter = (row==0 or row==8 or col==0 or col==8) %}
+        {% set is_spoke = (row==4 or col==4) %}
+        {% if (row==0 and col==0) or (row==0 and col==8) or (row==8 and col==0) or (row==8 and col==8) %}
+          <div class="grid-item spoke">Roll Again</div>
+        {% elif row==4 and col==4 %}
+          <div class="grid-item center">Trival Compute</div>
+        {% elif row==0 and col==4 %}
+          <div class="grid-item hq-blue">HQ</div>
+        {% elif (row==1 and col==0) or (row==1 and col==8) or (row==4 and col==3) or (row==4 and col==7) or (row==5 and col==0) or (row==5 and col==8) or (row==6 and col==4) or (row==8 and col==2) or (row==8 and col==6) %}
+          <div class="grid-item hq-blue"></div>
+        {% elif row==4 and col==8 %}
+          <div class="grid-item hq-pink">HQ</div>
+        {% elif (row==0 and col==3) or (row==0 and col==7) or (row==2 and col==0) or (row==3 and col==4) or (row==4 and col==2) or (row==6 and col==0) or (row==7 and col==4) or (row==8 and col==3) or (row==8 and col==7) %}
+          <div class="grid-item hq-pink"></div>
+        {% elif row==8 and col==4 %}
+          <div class="grid-item hq-yellow">HQ</div>
+        {% elif (row==0 and col==2) or (row==0 and col==6) or (row==2 and col==4) or (row==3 and col==0) or (row==3 and col==8) or (row==4 and col==1) or (row==4 and col==5) or (row==7 and col==0) or (row==7 and col==8) %}
+          <div class="grid-item hq-yellow"></div>
+        {% elif row==4 and col==0 %}
+          <div class="grid-item hq-green">HQ</div>
+        {% elif (row==0 and col==1) or (row==0 and col==5) or (row==1 and col==4) or (row==2 and col==8) or (row==4 and col==6) or (row==5 and col==4) or (row==6 and col==8) or (row==8 and col==1) or (row==8 and col==5) %}
+          <div class="grid-item hq-green"></div>
+        {% elif is_perimeter or is_spoke %}
+          <div class="grid-item spoke"></div>
+        {% elif row==2 and col==2 and players|length>0 %}
+          <div class="grid-item quadrant">{{ players[0].username }}</div>
+        {% elif row==2 and col==6 and players|length>1 %}
+          <div class="grid-item quadrant">{{ players[1].username }}</div>
+        {% elif row==6 and col==2 and players|length>2 %}
+          <div class="grid-item quadrant">{{ players[2].username }}</div>
+        {% elif row==6 and col==6 and players|length>3 %}
+          <div class="grid-item quadrant">{{ players[3].username }}</div>
+        {% else %}
+          <div>&nbsp;</div>
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+  </div>
+
+  {% if players %}
+    <h2>Players:</h2>
+    <div class="player-list" id="playerList">
+      {% for player in players %}
+        {% if player.username %}
+          <p>{{ player.username }} - {{ player.color }}</p>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="panel" id="panel" style="display:none;">
+      <div class="panel-row">
+        <button class="btn" id="rollBtn">🎲 Roll Dice</button>
+        <button class="btn" id="moveBtn">➡️ Move</button>
+        <input type="text" id="answerInput" placeholder="Your answer…" />
+        <button class="btn" id="answerBtn" disabled>✅ Submit Answer</button>
+      </div>
+      <div class="panel-row">
+        <span class="muted"><strong>Chips:</strong></span>
+        <span id="chips"></span>
+      </div>
+      <div class="status" id="status">Game ready. Click "Roll Dice".</div>
+    </div>
+
+    <h2>Game:</h2>
+    <form action="bootup" method="GET" id="startForm">
+      <input type="submit" name="go_button" value="Start Game" class="btn" />
+    </form>
+  {% else %}
+    <h2>No Players Detected</h2>
+    <h2>Input Players:</h2>
+    <form action="users_menu" method="GET">
+      <input type="submit" name="player_button" value="Input Players" class="btn-secondary" />
+    </form>
+  {% endif %}
+
+  <h2>Home:</h2>
+  <form action="/" method="GET">
+    <input type="submit" name="home_button" value="Home" class="btn-secondary" />
+  </form>
+
+  <script>
+  (function(){
+    const startForm = document.getElementById('startForm');
+    const panel = document.getElementById('panel');
+    const statusEl = document.getElementById('status');
+    const chipsEl = document.getElementById('chips');
+    const rollBtn = document.getElementById('rollBtn');
+    const moveBtn = document.getElementById('moveBtn');
+    const answerBtn = document.getElementById('answerBtn');
+    const ansInput = document.getElementById('answerInput');
+
+    let currentPlayer = null;
+    let pendingQuestionId = null;
+
+    function showPanel(){ panel.style.display='block'; }
+    function setStatus(msg){ statusEl.textContent = msg; }
+    function setChips(c){ chipsEl.textContent = Array.isArray(c)? c.join(', ') : ''; }
+    function enableAnswer(enable){ answerBtn.disabled = !enable; }
+
+    async function postJSON(url, body){
+      const r = await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})});
+      const j = await r.json().catch(()=>({}));
+      if(!r.ok) throw new Error(j.error || (r.status+' '+r.statusText));
+      return j;
+    }
+
+    async function probe(){
+      try{
+        const res = await fetch('/api/demo/gid');
+        const j = await res.json();
+        if(j.active){ showPanel(); }
+      }catch(e){}
+    }
+    probe();
+
+    // Roll
+    rollBtn.addEventListener('click', async ()=>{
+      try{
+        const d = await postJSON('/api/roll-dice', {});
+        currentPlayer = d.player;
+        setStatus(`🎲 ${d.player} rolled ${d.roll}. Location: ${d.validMoves.join(', ')}`);
+        enableAnswer(false);
+        pendingQuestionId = null;
+      }catch(e){ setStatus('❌ '+e.message); }
+    });
+
+    // Move → 
+    moveBtn.addEventListener('click', async ()=>{
+      try{
+        const d = await postJSON('/api/move', {});
+        if(d.question){
+          pendingQuestionId = d.questionId;
+          setStatus(`❓ Question: ${d.question}`);
+          enableAnswer(true);
+        }else{
+          setStatus(`📍 ${d.player} moved. No question this turn.`);
+          enableAnswer(false);
+        }
+      }catch(e){ setStatus('❌ '+e.message); }
+    });
+
+    // Answer
+    answerBtn.addEventListener('click', async ()=>{
+      try{
+        const body = { answer: ansInput.value || '' };
+        if(pendingQuestionId) body.questionId = pendingQuestionId;
+        const d = await postJSON('/api/answer', body);
+        setChips(d.chips);
+        setStatus(`🧠 Your: ${d.yourAnswer} | ${d.correct ? '✅ Correct' : '❌ Incorrect'} (Ans: ${d.correctAnswer})${d.isWin ? '\\n🏆 CONGRATS WIN!' : ''}`);
+        ansInput.value = '';
+        enableAnswer(false);
+        pendingQuestionId = null;
+        currentPlayer = null;
+      }catch(e){ setStatus('❌ '+e.message); }
+    });
+
+    // Start Game
+    if(startForm){
+      startForm.addEventListener('submit', ()=>{ /* submit to /bootup */ });
+    }
+  })();
+  </script>
+</body>
+</html>
