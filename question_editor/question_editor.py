@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
+from bs4 import BeautifulSoup
 import json
 import requests
 
 DB_URL = "http://127.0.0.1:5000"
-HEADERS = {"Content-Type": "application/json"}
 
 # Crud: create single card
 def prompt_create_card() -> None:
@@ -28,14 +28,15 @@ def prompt_create_card() -> None:
             data = {"category": card_data[0], "question": card_data[1],
                     "answer": card_data[2], "deck_tags": card_data[3].strip().split(':')}
             try:
-                response = requests.post(f"{DB_URL}/questions", data=json.dumps(data),
-                                         headers=HEADERS)
+                response = requests.post(f"{DB_URL}/create_question", data=data)
                 response.raise_for_status()
-            except requests.exceptions as err:
-                print("ERROR: {err}")
+            except requests.exceptions.RequestException as err:
+                print(f"ERROR: {err}")
                 break
 
-            print(json.dumps(response.json(), indent=4))
+            soup = BeautifulSoup(response.content, "html.parser")
+            soup_paras_list = soup.find_all('p')
+            print(soup_paras_list[0].text)
 
 # cRud: read a single card
 def prompt_read_card() -> None:
@@ -55,14 +56,15 @@ def prompt_read_card() -> None:
         else:
             data = {"question_id": selection}
             try:
-                response = requests.get(f"{DB_URL}/questions/{selection}", data=json.dumps(data),
-                                         headers=HEADERS)
+                response = requests.get(f"{DB_URL}/question/{selection}")
                 response.raise_for_status()
-            except requests.exceptions as err:
-                print("ERROR: {err}")
+            except requests.exceptions.RequestException as err:
+                print(f"ERROR: {err}")
                 break
 
-            print(json.dumps(response.json(), indent=4))
+            soup = BeautifulSoup(response.content, "html.parser")
+            soup_paras_list = soup.find_all('p')
+            print(soup_paras_list[0].text)
 
 # cRud: read all cards
 def prompt_read_cards() -> None:
@@ -71,13 +73,15 @@ def prompt_read_cards() -> None:
     try:
         response = requests.get(f"{DB_URL}/questions")
         response.raise_for_status()
-    except requests.exceptions as err:
-        print("ERROR: {err}")
+    except requests.exceptions.RequestException as err:
+        print(f"ERROR: {err}")
         return
 
-    all_card_data = response.json()
-    for card_data in all_card_data:
-        print(json.dumps(card_data, indent=4))
+    soup = BeautifulSoup(response.content, "html.parser")
+    soup_paras_list = soup.find_all('p')
+
+    for card_data in soup_paras_list:
+        print(card_data.text)
     print("finished reading data from all cards")
     return
 
@@ -106,6 +110,7 @@ def prompt_update_card() -> None:
             continue
         else:
             data = dict()
+            data["question_id"] = card_id
             if card_data[1]:
                 data["category"] = card_data[1]
             if card_data[2]:
@@ -120,14 +125,16 @@ def prompt_update_card() -> None:
                 continue
 
             try:
-                response = requests.put(f"{DB_URL}/questions/{card_id}", json=data,
-                                         headers=HEADERS)
+                response = requests.post(f"{DB_URL}/commit_update", data=data)
                 response.raise_for_status()
-            except requests.exceptions as err:
-                print("ERROR: {err}")
+            except requests.exceptions.RequestException as err:
+                print(f"ERROR: {err}")
                 break
 
-            print(json.dumps(response.json(), indent=4))
+            soup = BeautifulSoup(response.content, "html.parser")
+            soup_paras_list = soup.find_all('p')
+            print(soup_paras_list[0].text)
+
 
 # cruD: delete a card
 def prompt_delete_card() -> None:
@@ -146,13 +153,16 @@ def prompt_delete_card() -> None:
             return
 
         try:
-            response = requests.delete(f"{DB_URL}/questions/{selection}")
+            response = requests.post(f"{DB_URL}/commit_delete", data={"question_id": selection})
             response.raise_for_status()
-        except requests.exceptions as err:
-            print("ERROR: {err}")
+        except requests.exceptions.RequestException as err:
+            print(f"ERROR: {err}")
             return
 
-        print(json.dumps(response.json(), indent=4))
+        soup = BeautifulSoup(response.content, "html.parser")
+        soup_paras_list = soup.find_all('p')
+        print(soup_paras_list[0].text)
+
 
 
 def prompt_welcome() -> int:

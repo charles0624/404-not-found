@@ -5,8 +5,8 @@ db = SQLAlchemy()
 # Table to hold question to deck relationships (many-to-many)
 question_decktag = db.Table(
     "question_decktag",
-    db.Column("question_id", db.Integer, db.ForeignKey("questions.id")),
-    db.Column("decktag_id", db.Integer, db.ForeignKey("deck_tags.id")),
+    db.Column("question_id", db.Integer, db.ForeignKey("questions.id"), primary_key=True),
+    db.Column("decktag_id", db.Integer, db.ForeignKey("deck_tags.id"), primary_key=True)
 )
 
 
@@ -38,8 +38,10 @@ class Question(db.Model):
 
     deck_tags = db.relationship(
         "DeckTag",
-        secondary="question_decktag",
-        backref="question",
+        secondary=question_decktag,
+        #secondary="question_decktag",
+        #backref="question",
+        backref="tags",
         lazy="dynamic",
         # cascade="all, delete-orphan" # this kills the deck_tags when we delete the Question obj
     )

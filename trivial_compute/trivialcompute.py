@@ -1,13 +1,17 @@
+import copy
+import random
+import sys
+
 # web server and database stuff
 from flask import Flask, redirect, render_template, request, jsonify, url_for
 from pathlib import Path
 from flask_sqlalchemy import SQLAlchemy
-import random
-import sys
-
+from sqlalchemy import desc
 
 from models import db, Category, DeckTag, Question
 from game_object import COLORS, get_player
+
+from werkzeug.exceptions import NotFound
 
 # name the app as the parent dir
 APP_NAME = Path(__file__).stem
@@ -32,6 +36,7 @@ with app.app_context():
 
 HOME_PAGE = "index.html"
 USERS_MENU = "users_menu.html"
+GAME_READY = "game_ready.html"
 GAME_SESSION = "game_session.html"
 
 QUESTIONS_MENU = "questions_menu.html"
@@ -41,14 +46,17 @@ UPDATE_QUESTION = "update_question.html"
 DELETE_QUESTION = "delete_question.html"
 
 
-###
-#  Gameplay Routes
-###
+#########
+#########
+#  Startup Routes
+#########
+#########
+# home page
 @app.route("/", methods=["GET"])
 def index():
     return render_template(HOME_PAGE)
 
-
+# quit
 @app.route("/exit", methods=["GET"])
 def exit():
     sys.exit()  # can't imagine this is recommended
@@ -58,47 +66,15 @@ def exit():
 def play_game():
     return render_template(USERS_MENU)
 
-def random_color_index(modulo_number):
-    return random.randint(0,100) % modulo_number # ensure it is random AND between length of list, inclusive
-
-# called from USERS_MENU
-@app.route("/game_session", methods=["POST"])
-def display_board():
-    player_list = [
-        request.form.get("player1", None),
-        request.form.get("player2", None),
-        request.form.get("player3", None),
-        request.form.get("player4", None)
-    ]
-    player_colors = COLORS
-    list_len = len(player_colors)
-    data: dict = {}
-    for player in player_list:
-        player_color = player_colors.pop(random_color_index(list_len))
-        data[player] = player_color
-        list_len -= 1
-
-    return render_template(GAME_SESSION, players=data)
-
-# TODO
-# @app.route("settings", methods=["GET"])
-# def settings():
-#    pass
-#
-# @app.route("start_game", methods=["GET"])
-# def start_game():
-#    pass
-#
-
-###
+#########
+#########
 #  Question Database Routes
-###
-
-# TODO
-# @app.route("question_menu", methods=["GET"])
-# def question_menu():
-#    return render_template(QUESTIONS_MENU)
-
+#########
+#########
+# interact with question editor
+@app.route("/question_menu", methods=["GET"])
+def question_menu():
+    return render_template(QUESTIONS_MENU)
 
 # CREATE a question
 @app.route("/create_question", methods=["GET", "POST"])
@@ -115,7 +91,6 @@ def create_question():
 
     # 1. Find or create category
     table_category = Category.query.filter_by(name=category).first()
-    # db.session.query(Category).filter(Category.name == category).first()
     if not table_category:
         table_category = Category(name=category)
         db.session.add(table_category)
@@ -133,7 +108,7 @@ def create_question():
     # 3. Handle deck tags (many-to-many)
     # for tag_name in data.get('deck_tags', []):
     if deck_tags:
-        all_tags = deck_tags.split()
+        all_tags = deck_tags.split(':')
         for tag_name in all_tags:
             tag = DeckTag.query.filter_by(name=tag_name).first()
             if not tag:
@@ -180,10 +155,6 @@ def list_questions(question_id=None):
     return render_template(READ_QUESTIONS, questions=data)
 
 
-def list_question(question_id):
-    return render_template(READ_QUESTIONS, questions=data)
-
-
 # UPDATE a question
 @app.route("/update_question", methods=["GET"])
 @app.route("/commit_update", methods=["POST"])
@@ -192,7 +163,12 @@ def update_question():
     # UPDATE question
     if request.method == "POST":
         question_id = request.form.get("question_id", None)
-        question_obj = Question.query.get_or_404(question_id)
+
+        try:
+            question_obj = Question.query.get_or_404(question_id)
+        except NotFound:
+            response_msg = "Question ID Not Found! Update not Complete."
+            return render_template(UPDATE_QUESTION, response_message=response_msg)
 
         question = request.form.get("question", None)
         answer = request.form.get("answer", None)
@@ -206,15 +182,18 @@ def update_question():
         if category:
             table_category = Category.query.filter_by(name=category).first()
             if not table_category:
-                category = Category(name=category)
-                db.session.add(category)
-            question_obj.category.name = category
+                table_category = Category(name=category)
+                db.session.add(table_category)
+                db.session.flush()
+            question_obj.category = table_category
         if deck_tags:
-            question_obj.deck_tags.clear()
-            for tag_name in deck_tags:
-                tag = DeckTag.query.filter(name=tag_name).first()
+            question_obj.deck_tags = []
+            for tag_name in deck_tags.split(':'):
+                tag = DeckTag.query.filter_by(name=tag_name).first()
                 if not tag:
                     tag = DeckTag(name=tag_name)
+                    db.session.add(tag)
+                    db.session.flush()
                 question_obj.deck_tags.append(tag)
         db.session.commit()
 
@@ -232,9 +211,16 @@ def delete_question():
     # DELETE question
     if request.method == "POST":
         question_id = request.form.get("question_id", None)
-        question = Question.query.get_or_404(question_id)
-        for deck_tag in question.deck_tags:
-            question.deck_tags.remove(deck_tag)
+
+        try:
+            question = Question.query.get_or_404(question_id)
+        except NotFound:
+            response_msg = "Question ID Not Found! Delete not Complete."
+            return render_template(DELETE_QUESTION, response_message=response_msg)
+
+        if question.deck_tags:
+            for deck_tag in question.deck_tags:
+                question.deck_tags.remove(deck_tag)
         db.session.delete(question)
         db.session.commit()
 
@@ -244,6 +230,141 @@ def delete_question():
         pass
     return render_template(DELETE_QUESTION, response_message=response_msg)
 
+
+#from game_session import GameSession
+#from game_session_manager import GameSessionManager
+#from dice_service import DiceService
+#from player_tracker import PlayerTracker
+#from turn_manager import TurnManager
+#from rule_engine import RuleEngine
+#from data_access_stub import QuestionDataAccessStub
+
+# full game states
+game_session = None
+turn_manager = None
+rule_engine = None
+player_tracker = None
+manager = None
+
+#########
+#########
+#  Game Session Routes
+#########
+#########
+def random_color_index(modulo_number):
+    return random.randint(0,100) % modulo_number # ensure it is random AND between length of list, inclusive
+
+# get users
+
+@app.route("/users_menu", methods=["GET", "POST"])
+def get_users():
+    return render_template(USERS_MENU)
+
+# get users
+# called from 'users_menu.html'
+@app.route("/validate_users", methods=["POST"])
+def validate_users():
+    # get player names
+    player_list = [
+        request.form.get("player1"),
+        request.form.get("player2"),
+        request.form.get("player3"),
+        request.form.get("player4")
+    ]
+
+    # check that player names are not empty
+    real_player_list = list()
+    for elem in player_list:
+        if len(elem) > 0:
+            real_player_list.append(elem)
+    if len(real_player_list) == 0:
+        data = {"user_data": "fail"}
+        return render_template(USERS_MENU, no_users=data)
+
+    # create player objects and assign each one a color
+    player_colors = copy.deepcopy(COLORS)
+    list_len = len(player_colors)
+    player_objs = list()
+    for player in real_player_list:
+        player_color = player_colors.pop(random_color_index(list_len))
+        player_objs.append(get_player(player, player_color))
+        list_len -= 1
+
+    # generate the game board, populated with the players objects
+    return render_template(USERS_MENU, players=player_objs)
+
+# called from USERS_MENU after correct player validation
+@app.route("/game_session", methods=["GET", "POST"])
+def game_session():
+    return render_template(GAME_SESSION)
+
+# Game Initialization
+@app.route('/api/settings', methods=['POST'])
+def setup_game():
+    global game_session, manager, turn_manager, rule_engine, player_tracker
+    data = request.get_json()
+    users = data.get("users", [])       # e.g.: ["Alice", "Bob"]
+    topics = data.get("topics", [])     # e.g.: ["Math", "Science"]
+
+    game_session = GameSession(users, topics)
+    manager = GameSessionManager(users, topics)
+    turn_manager = TurnManager(users)
+    rule_engine = RuleEngine()
+    player_tracker = PlayerTracker(users)
+
+    db = QuestionDataAccessStub()
+    question = db.get_mock_question()
+    print(f"[Stub] Game Logic received question: {question}")
+
+    return jsonify({"status": "game session initialized", "players": users})
+
+
+# roll dice
+@app.route('/api/roll-dice', methods=['POST'])
+def roll_dice():
+    data = request.get_json()
+    player = data.get("player", "Unknown")
+    roll = DiceService.roll()
+    print(f"[Stub] Player '{player}' rolled a {roll}")
+    valid_moves = [f"Space {i}" for i in range(1, roll + 1)]
+    return jsonify({"roll": roll, "validMoves": valid_moves})
+
+
+# player move
+@app.route('/api/move', methods=['POST'])
+def move_player():
+    data = request.get_json()
+    player = data.get("player")
+    space = data.get("target")
+
+    # real space change
+    player_tracker.update_position(player, 1)
+    print(f"[Stub] {player} moved to {space}")
+
+    return jsonify({
+        "status": "moved",
+        "player": player,
+        "newPosition": space
+    })
+
+
+# answer verify and chips allocation
+@app.route('/api/answer', methods=['POST'])
+def check_answer():
+    data = request.get_json()
+    player = data.get("player")
+    answer = data.get("answer")
+
+    correct = rule_engine.validate_answer(answer)  # always True in staub
+
+    if correct:
+        chip = "math"
+        player_tracker.add_chip(player, chip)
+        print(f"[Stub] {player} answered correctly and earned chip {chip}")
+        return jsonify({"correct": True, "chip_awarded": chip})
+    else:
+        print(f"[Stub] {player} answered incorrectly")
+        return jsonify({"correct": False})
 
 if __name__ == "__main__":
     app.run(debug=True)

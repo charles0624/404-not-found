@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRIVIAL COMPUTE</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/game_session_styles.css') }}">
+</head>
+<body>
+    <h1>TRIVIAL COMPUTE</h1>
+    {% if players %}
+        <h2>Players:</h2>
+        <div class="player-list">
+            {% for player in players %}
+                {% if player.username %}
+                    <p>{{ player.username }} - {{ player.color }}</p>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <h2>Game:</h2>
+        <div class="good2go">
+            <form action="bootup", method="GET">
+                <input type="submit" name="go_button" value="Start Game">
+            </form>
+        </div>
+    {% else %}
+        <h2>No Players Detected</h2>
+        <h2>Input players:</h2>
+        <div class="new_players">
+            <form action="users_menu", method="GET">
+                <input type="submit" name="player_button" value="Input Players">
+            </form>
+        </div>
+    {% endif %}
+
+    <h2>Home:</h2>
+    <div class="back_home">
+        <form action="/", method="GET">
+            <input type="submit" name="home_button" value="Home">
+        </form>
+    <div class="container">
+        <div class="grid-item">&nbsp;</div>
+        <div class="grid-item">&nbsp;</div>
+        <div class="grid-item">&nbsp;</div>
+        <div class="grid-item">&nbsp;</div>
+        <div class="grid-item">&nbsp;</div>
+        <div class="grid-item">&nbsp;</div>
+        <div class="grid-item">&nbsp;</div>
+        <div class="grid-item">&nbsp;</div>
+        <div class="grid-item">&nbsp;</div>
+        <div class="grid-item">&nbsp;</div>
+        <div class="grid-item">&nbsp;</div>
+        <div class="grid-item">&nbsp;</div>
+        <div class="grid-item">&nbsp;</div>
+        <div class="grid-item">&nbsp;</div>
+        <div class="grid-item">&nbsp;</div>
+        <div class="grid-item">&nbsp;</div>
+    </div>
+</body>
+</html>
