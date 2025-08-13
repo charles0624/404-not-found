@@ -12,11 +12,13 @@
       color:white;margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:2rem;text-align:center;
     }
     h1{
-      font-family:'Luckiest+Guy',cursive;font-size:3.5rem;margin-bottom:1rem;
+      font-family:'Luckiest Guy',cursive;font-size:3.5rem;margin-bottom:1rem;
       text-shadow:-3px -3px 0 black,3px -3px 0 black,-3px 3px 0 black,3px 3px 0 black;
     }
     h2{font-family:'Poppins',sans-serif;font-size:1.5rem;margin-top:1.5rem}
 
+
+    /* board */
     .container{display:grid;grid-template-columns:repeat(9,90px);grid-template-rows:repeat(9,90px);gap:4px;margin-top:2rem}
     .grid-item{
       background:rgba(255,255,255,0.3);border-radius:6px;display:flex;align-items:center;justify-content:center;
@@ -34,6 +36,8 @@
       text-shadow:-1px -1px 0 black,1px -1px 0 black,-1px 1px 0 black,1px 1px 0 black;text-align:center;
     }
 
+
+    /* player list */
     .player-list{
       background:rgba(0,0,0,.3);border-radius:12px;padding:1rem 2rem;
       box-shadow:0 4px 12px rgba(0,0,0,.4);max-width:400px;width:100%;margin-bottom:1.5rem;
@@ -67,7 +71,6 @@
 <body>
   <h1>TRIVIAL COMPUTE</h1>
 
-  <!-- 棋盘（保持原有布局与配色） -->
   <div class="container">
     {% for row in range(9) %}
       {% for col in range(9) %}
@@ -120,14 +123,10 @@
       {% endfor %}
     </div>
 
-
     <div class="panel" id="panel" style="display:none;">
       <div class="panel-row">
         <button class="btn" id="rollBtn">🎲 Roll Dice</button>
-
-        <div id="destRow" class="panel-row" style="display:none;"></div>
-      </div>
-      <div class="panel-row">
+        <button class="btn" id="moveBtn">➡️ Move</button>
         <input type="text" id="answerInput" placeholder="Your answer…" />
         <button class="btn" id="answerBtn" disabled>✅ Submit Answer</button>
       </div>
@@ -162,17 +161,21 @@
     const statusEl = document.getElementById('status');
     const chipsEl = document.getElementById('chips');
     const rollBtn = document.getElementById('rollBtn');
+
     const answerBtn = document.getElementById('answerBtn');
     const ansInput = document.getElementById('answerInput');
     const destRow = document.getElementById('destRow');
+    const moveBtn = document.getElementById('moveBtn');
+    const answerBtn = document.getElementById('answerBtn');
+    const ansInput = document.getElementById('answerInput');
 
+    let currentPlayer = null;
     let pendingQuestionId = null;
 
     function showPanel(){ panel.style.display='block'; }
     function setStatus(msg){ statusEl.textContent = msg; }
     function setChips(c){ chipsEl.textContent = Array.isArray(c)? c.join(', ') : ''; }
     function enableAnswer(enable){ answerBtn.disabled = !enable; }
-    function clearDest(){ destRow.innerHTML=''; destRow.style.display='none'; }
 
     async function postJSON(url, body){
       const r = await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})});
@@ -180,7 +183,6 @@
       if(!r.ok) throw new Error(j.error || (r.status+' '+r.statusText));
       return j;
     }
-
 
     async function probe(){
       try{
@@ -191,75 +193,51 @@
     }
     probe();
 
-    // 掷骰：返回 validMoves（2~8）
+    // Roll
     rollBtn.addEventListener('click', async ()=>{
       try{
-        const d = await postJSON('/api/roll-dice',{});
-        setStatus(`🎲 ${d.player} rolled ${d.roll}. Choose a destination:`);
-        renderDestinations(d.validMoves);
+        const d = await postJSON('/api/roll-dice', {});
+        currentPlayer = d.player;
+        setStatus(`🎲 ${d.player} rolled ${d.roll}. Location: ${d.validMoves.join(', ')}`);
         enableAnswer(false);
         pendingQuestionId = null;
       }catch(e){ setStatus('❌ '+e.message); }
     });
 
-    function renderDestinations(list){
-      clearDest();
-      if(!Array.isArray(list) || list.length===0) return;
-      destRow.style.display = 'flex';
-      list.forEach(pos=>{
-        const b = document.createElement('button');
-        b.className = 'btn';
-        b.textContent = `Go to ${pos}`;
-        b.onclick = async (ev)=>{
-          ev.preventDefault();
-          try{
-            const d = await postJSON('/api/move', { targetSquare: pos });
-            if(d.landedType === 'ROLL_AGAIN'){
-              setStatus('⤴️ Roll again!');
-              clearDest();
-              enableAnswer(false);
-              pendingQuestionId = null;
-              return;
-            }
-            if(d.landedType === 'CENTER'){
-              setStatus('⭐ Center square. (Demo) Category dialog TBD.');
-              clearDest();
-              enableAnswer(false);
-              pendingQuestionId = null;
-              return;
-            }
-            if(d.question){
-              setStatus(`❓ ${d.question}  (${d.category})`);
-              pendingQuestionId = d.questionId;
-              enableAnswer(true);
-            }else{
-              setStatus(`${d.player} moved. No question this turn.`);
-              enableAnswer(false);
-              pendingQuestionId = null;
-            }
-            setChips(d.chips || []);
-            clearDest();
-          }catch(e){ setStatus('❌ '+e.message); }
-        };
-        destRow.appendChild(b);
-      });
-    }
+    // Move → 
+    moveBtn.addEventListener('click', async ()=>{
+      try{
+        const d = await postJSON('/api/move', {});
+        if(d.question){
+          pendingQuestionId = d.questionId;
+          setStatus(`❓ Question: ${d.question}`);
+          enableAnswer(true);
+        }else{
+          setStatus(`📍 ${d.player} moved. No question this turn.`);
+          enableAnswer(false);
+        }
+      }catch(e){ setStatus('❌ '+e.message); }
+    });
 
-
+    // Answer
     answerBtn.addEventListener('click', async ()=>{
       try{
-        const body = { answer: (ansInput.value||'') };
+        const body = { answer: ansInput.value || '' };
         if(pendingQuestionId) body.questionId = pendingQuestionId;
         const d = await postJSON('/api/answer', body);
         setChips(d.chips);
-        setStatus(`🧠 Your: ${d.yourAnswer} | ${d.correct ? '✅ Correct' : '❌ Incorrect'} (Ans: ${d.correctAnswer})${d.isWin ? '\\n🏆 WIN!' : (d.correct ? '\\nRoll again!' : '\\nNext player.')} `);
+        setStatus(`🧠 Your: ${d.yourAnswer} | ${d.correct ? '✅ Correct' : '❌ Incorrect'} (Ans: ${d.correctAnswer})${d.isWin ? '\\n🏆 CONGRATS WIN!' : ''}`);
         ansInput.value = '';
-        pendingQuestionId = null;
         enableAnswer(false);
+        pendingQuestionId = null;
+        currentPlayer = null;
       }catch(e){ setStatus('❌ '+e.message); }
     });
 
-    if(startForm){ startForm.addEventListener('submit', ()=>{}); }
+    // Start Game
+    if(startForm){
+      startForm.addEventListener('submit', ()=>{ /* submit to /bootup */ });
+    }
   })();
   </script>
 </body>

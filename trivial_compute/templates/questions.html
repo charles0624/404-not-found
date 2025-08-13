@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Poppins:wght@500&display=swap"
+      rel="stylesheet"
+    />
+    <title>The Questions</title>
+    <style>
+        body {
+            font-family: 'Luckiest Guy', 'Montserrat';
+            background: linear-gradient(to bottom right, #002D72, #68ACE5);
+            color: white;
+            margin: 0;
+            min-height: 100vh;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            text-shadow:
+                -3px -3px 0 black,
+                3px -3px 0 black,
+                -3px  3px 0 black,
+                3px  3px 0 black;
+        }
+
+        table {
+            font-family: 'Poppins', sans-serif;
+            max-width: 800px;
+            width: 100%;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            border-collapse: separate;
+            border-spacing: 0;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        thead {
+            background-color: #F56600;
+        }
+
+        thead th {
+            color: black;
+            font-weight: bold;
+            padding: 0.8rem 1rem;
+            font-size: 1.1rem;
+            text-align: left;
+            user-select: none;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            transition: background-color 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background-color: rgba(255, 158, 27, 0.3);
+        }
+
+        tbody td {
+            padding: 0.7rem 1rem;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: left;
+            text-shadow:
+                -0.03em -0.03em 0 black,
+                0.03em -0.03em 0 black,
+                -0.03em  0.03em 0 black,
+                0.03em  0.03em 0 black;
+            vertical-align: middle;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .button-row form {
+            margin: 0;
+            background: none;
+            padding: 0;
+            box-shadow: none;
+        }
+
+        input.return-home {
+            background-color: #68ACE5;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 102, 204, 0.5);
+            transition: transform 0.2s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+            min-width: 140px;
+            display: block;
+            border: none;
+            border-radius: 8px;
+            padding: 0.8rem 2rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+
+        input.return-home:hover {
+            background-color: #002D72;
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 74, 153, 0.8);
+        }
+
+        .deck-tags {
+            font-style: italic;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>The Questions</h1>
+
+    {% if questions %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Question</th>
+                <th>Answer</th>
+                <th>Category</th>
+                <th>Deck Tags</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for q in questions %}
+            <tr>
+                <td>{{ q.id }}</td>
+                <td>{{ q.question }}</td>
+                <td>{{ q.answer }}</td>
+                <td>{{ q.category }}</td>
+                <td class="deck-tags">
+                  {% if q.deck_tags %}
+                    {{ q.deck_tags | join(', ') }}
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p style="font-family: 'Poppins', sans-serif; font-size: 1.2rem; font-weight: 500;">No questions found!</p>
+    {% endif %}
+
+    <div class="button-row">
+        <form action="/question_menu" method="GET">
+            <input type="submit" class="return-home" value="Questions Menu" />
+        </form>
+        <form action="/" method="GET">
+            <input type="submit" class="return-home" value="Return Home" />
+        </form>
+    </div>
+</body>
+</html>

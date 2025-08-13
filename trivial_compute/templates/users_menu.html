@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Poppins:wght@500&display=swap" rel="stylesheet">
+    <title>Players</title>
+    <style>
+        body {
+            font-family: 'Luckiest Guy', 'Montserrat';
+            background: linear-gradient(to bottom right, #002D72, #68ACE5);
+            color: white;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 3rem;
+            margin-top: 5rem;
+            margin-bottom: 0.3rem;
+            text-shadow:
+                -3px -3px 0 black,
+                3px -3px 0 black,
+                -3px  3px 0 black,
+                3px  3px 0 black;
+        }
+
+        h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.2rem;
+            margin-top: 0rem;
+            margin-bottom: 0.5rem;
+        }
+
+        form {
+            padding: 1.5rem 2rem;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            max-width: 400px;
+            width: 100%;
+            font-family: 'Poppins', sans-serif;
+            box-sizing: border-box;
+            display: block;
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 1rem;
+            text-align: left;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 0.6rem;
+            border-radius: 6px;
+            border: none;
+            margin-top: 0.3rem;
+            font-size: 1rem;
+            box-sizing: border-box;
+            margin-bottom: 0.8rem;
+        }
+
+        input[type="submit"] {
+            background-color: #F56600;
+            font-family: 'Poppins', sans-serif;
+            color: black;
+            border: none;
+            padding: 0.8rem 2rem;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+            margin-top: 1.2rem;
+            min-width: 140px;
+            display: block;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #FF9E1B;
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 158, 27, 0.8);
+        }
+
+        input[type="reset"] {
+            background-color: #F56600;
+            font-family: 'Poppins', sans-serif;
+            color: black;
+            border: none;
+            padding: 0.8rem 2rem;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+            margin-top: 1.2rem;
+        }
+
+        input[type="reset"]:hover {
+            background-color: #FF9E1B;
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 158, 27, 0.8);
+        }
+
+        .status p{
+            margin-top: 1.5rem;
+            font-size: 1.4rem;
+            font-weight: bold;
+            text-shadow:
+                -0.05em -0.05em 0 black,
+                0.05em -0.05em 0 black,
+                -0.05em  0.05em 0 black,
+                0.05em  0.05em 0 black;
+        }
+
+        .return-home-form{
+            background: none;
+            padding: 0;
+            box-shadow: none
+        }
+
+        input.return-home{
+            background-color: #68ACE5;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 102, 204, 0.5);
+            transition: transform 0.2s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+            min-width: 140px;
+            display: block;
+        }
+
+        input.return-home:hover {
+            background-color: #002D72;
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 74, 153, 0.8);
+        }
+
+        .button-row{
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            align-items: center;
+            margin-top: 1rem;
+            width: 100%;
+        }
+
+        .button-row form{
+            margin: 0;
+        }
+
+        .button-row input[type="submit"],
+        .button-row input[type="reset"] {
+            display: inline-block;
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+    </style>
+</head>
+<body>
+    {% if response_message %}
+    <div class="status">
+        <h2>Status:</h2>
+        <p>{{ response_message }}</p>
+    </div>
+    {% endif %}
+    {% if no_users %}
+        <div class="status">
+            <h1>No Players Detected!</h1>
+            <br><br>
+            <h2>Input at least 1 player name here:</h2>
+            <div class="new_players">
+                <form action="users_menu", method="GET">
+                    <input type="submit" name="player_button" value="Return to User Menu">
+                </form>
+            </div>
+        </div>
+    {% elif players %}
+        <h1>Players:</h1>
+        <div class="player-list">
+            {% for player in players %}
+                {% if player.username %}
+                    <p>{{ player.username }} - {{ player.color }}</p>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <h2>Game:</h2>
+        <div class="good2go">
+            <form action="game_session", method="GET">
+                <input type="hidden", name="game_players", value=players>
+                <input type="submit" name="start_game" value="Start Game">
+            </form>
+        </div>
+    {% else %}
+        <h1>Input Player Names</h1>
+        <h2>At Minimum 1 Player Required</h2>
+
+        <form action="validate_users" method="POST">
+            <label for="player1">Player 1:</label>
+            <input type="text" id="player1" name="player1">
+
+            <label for="player2">Player 2:</label>
+            <input type="text" id="player2" name="player2">
+
+            <label for="player3">Player 3:</label>
+            <input type="text" id="player3" name="player3">
+
+            <label for="player4">Player 4:</label>
+            <input type="text" id="player4" name="player4">
+
+            <div class="button-row">
+            <input type="submit" value="Submit">
+            <input type="reset" value="Reset">
+            </div>
+        </form>
+    {% endif %}
+
+
+    <form action="/" method="GET" class="return-home-form">
+      <input type="submit" class="return-home" value="Return Home" />
+    </form>
+
+</body>
+</html>
